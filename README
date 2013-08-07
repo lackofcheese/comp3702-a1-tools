@@ -1,0 +1,12 @@
+Compile by running the command:
+    javac visualisation/*.java
+
+Then you can run it by using:
+    java visualiastion/Visualiser
+
+A problem and solution file can be specified from the command line by using:
+    java visualisation/Visualiser [problem-file] [solution-file]
+
+For example, using the test cases provided in this archive (i.e. the trivial
+cases provided in the assignment task sheet):
+    java visualisation/Visualiser test_problem.txt test_solution.txt

@@ -1,3 +1,5 @@
+A visualiser for COMP3702 Assignment 1.
+
 Compile by running the command:
     javac visualisation/*.java
 

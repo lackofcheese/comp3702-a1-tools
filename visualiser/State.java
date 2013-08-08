@@ -1,4 +1,5 @@
-package visualisation;
+package visualiser;
+
 
 import java.util.ArrayList;
 import java.util.List;

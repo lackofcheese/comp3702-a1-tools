@@ -1,4 +1,5 @@
-package visualisation;
+package visualiser;
+
 
 import java.io.File;
 

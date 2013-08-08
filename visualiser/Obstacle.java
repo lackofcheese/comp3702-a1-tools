@@ -1,4 +1,5 @@
-package visualisation;
+package visualiser;
+
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;

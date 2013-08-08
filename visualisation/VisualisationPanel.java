@@ -35,6 +35,8 @@ public class VisualisationPanel extends JComponent {
 	private Integer frameNumber = null;
 	private int maxFrameNumber;
 	
+	private int samplingPeriod = 100;
+	
 	private class VisualisationListener implements ComponentListener {
 		@Override
 		public void componentResized(ComponentEvent e) {
@@ -145,12 +147,10 @@ public class VisualisationPanel extends JComponent {
 		transform.concatenate(translation);
 	}
 	
-	public void paintState(Graphics g, State s) {
+	public void paintState(Graphics2D g2, State s) {
 		if (s == null) {
 			return;
 		}
-		
-		Graphics2D g2 = (Graphics2D)g;
 		Path2D.Float path = new Path2D.Float();
 		
 		List<Point2D> points = s.getASVPositions();
@@ -164,14 +164,19 @@ public class VisualisationPanel extends JComponent {
 		g2.draw(path);
 	}
 	
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	public void setSamplingPeriod(int samplingPeriod) {
+		this.samplingPeriod = samplingPeriod;
+		repaint();
+	}
+	
+	public void paintComponent(Graphics graphics) {
+		super.paintComponent(graphics);
 		if (!problemSetup.problemLoaded()) {
 			return;
 		}
-		Graphics2D g2 = (Graphics2D)g;
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		Graphics2D g2 = (Graphics2D)graphics;
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, getWidth(), getHeight());
 
 		List<Obstacle> obstacles = problemSetup.getObstacles();
 		if (obstacles != null) {
@@ -187,21 +192,23 @@ public class VisualisationPanel extends JComponent {
 			if (displayingSolution) {
 				List<State> path = problemSetup.getPath();
 				int lastIndex = path.size() - 1;
-				for (int i = 0; i <= lastIndex; i++) {
+				for (int i = 0; i < lastIndex; i += samplingPeriod) {
 					float t = (float)i / lastIndex;
 					g2.setColor(new Color(0, t, 1-t));
-					paintState(g, path.get(i));
+					paintState(g2, path.get(i));
 				}
+				g2.setColor(Color.green);
+				paintState(g2, path.get(lastIndex));
 			} else {
 				g2.setColor(Color.blue);	
-				paintState(g, problemSetup.getInitialState());
+				paintState(g2, problemSetup.getInitialState());
 				
 				g2.setColor(Color.green);
-				paintState(g, problemSetup.getGoalState());
+				paintState(g2, problemSetup.getGoalState());
 			}
 		} else {
 			g2.setColor(Color.blue);
-			paintState(g, currentState);
+			paintState(g2, currentState);
 		}
 	}
 }

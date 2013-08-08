@@ -1,10 +1,10 @@
 package visualisation;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +34,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -58,6 +60,8 @@ public class Visualiser {
 	private JSlider manualSlider;
 	private JSlider framerateSlider;
 	
+	private JSpinner samplingSpinner;
+	
 	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
 	    if (imgURL != null) {
@@ -81,6 +85,8 @@ public class Visualiser {
 	private static final int FRAMERATE_MIN = 1;
 	private static final int FRAMERATE_MAX = 200;
 	private static final int FRAMERATE_INIT = 50;
+	
+	private static final int SAMPLING_PERIOD_INIT = 100;
 	
 	private File defaultPath;
 	
@@ -170,6 +176,13 @@ public class Visualiser {
 		}
 	};
 	
+	private ChangeListener samplingListener = new ChangeListener() {
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			vp.setSamplingPeriod( (Integer)samplingSpinner.getValue());
+		}
+	};
+	
 	private ActionListener playPauseListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
@@ -211,11 +224,20 @@ public class Visualiser {
 				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)));
 		container.add(wp, BorderLayout.CENTER);
 		
+		//JPanel infoPanelWrapper = new JPanel(new BorderLayout());
 		infoPanel = new JPanel();
+		infoPanel.setLayout(new FlowLayout()); //(infoPanel, BoxLayout.LINE_AXIS));
+		
 		infoLabel = new JLabel("No problem to display.");
-		//infoPanel.setBackground(Color.WHITE);
-		//infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		samplingSpinner = new JSpinner(new SpinnerNumberModel(SAMPLING_PERIOD_INIT, 1, null, 1));
+		samplingSpinner.addChangeListener(samplingListener);
+		samplingSpinner.setPreferredSize(new Dimension(50, 20));
+		samplingSpinner.setVisible(false);
+		vp.setSamplingPeriod(SAMPLING_PERIOD_INIT);
 		infoPanel.add(infoLabel);
+		infoPanel.add(samplingSpinner);
+		
+		//infoPanelWrapper.add(infoPanel, BorderLayout.CENTER);
 		container.add(infoPanel, BorderLayout.NORTH);
 		
 		createMenus();
@@ -423,17 +445,20 @@ public class Visualiser {
 	private void setInfoText() {
 		if (!hasProblem) {
 			infoLabel.setText("No problem to display.");
+			samplingSpinner.setVisible(false);
 		} else if (animating) {
 			infoLabel.setText("Play the animation, or use the slider to control it manually.");
+			samplingSpinner.setVisible(false);
 		} else if (vp.isDisplayingSolution()) {
-			infoLabel.setText("Displaying the solution.");
+			infoLabel.setText("Displaying the solution; sampling period:");
+			samplingSpinner.setVisible(true);
 		} else {
 			infoLabel.setText("Displaying the problem: blue = initial, green = goal, red = obstacle");
+			samplingSpinner.setVisible(false);
 		}
 	}
 
 	private void setHasProblem(boolean hasProblem) {
-		System.out.println("!");
 		this.hasProblem = hasProblem;
 		loadSolutionItem.setEnabled(hasProblem);
 		problemItem.setEnabled(hasProblem);

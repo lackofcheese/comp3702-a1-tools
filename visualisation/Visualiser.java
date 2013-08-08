@@ -1,12 +1,15 @@
 package visualisation;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -31,8 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -41,16 +43,20 @@ public class Visualiser {
 	
 	private VisualisationPanel vp;
 	
+	private JPanel infoPanel;
+	private JLabel infoLabel;
+	
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
-	private JMenuItem loadProblemItem, loadSolutionItem, assumeDirectSolutionItem, exitItem;
+	private JMenuItem loadProblemItem, loadSolutionItem, exitItem; //assumeDirectSolutionItem
 	private JMenu animationMenu;
 	private JMenuItem initialiseItem, playPauseItem, stopItem;
+	private JMenu displayMenu;
+	private JMenuItem problemItem, solutionItem;
 	
 	private JPanel animationControls;
 	private JSlider manualSlider;
 	private JSlider framerateSlider;
-	private JSpinner resolutionSpinner;
 	
 	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
@@ -73,23 +79,28 @@ public class Visualiser {
 	private boolean hasSolution;
 	
 	private static final int FRAMERATE_MIN = 1;
-	private static final int FRAMERATE_MAX = 100;
+	private static final int FRAMERATE_MAX = 200;
 	private static final int FRAMERATE_INIT = 50;
-	
-	private static final int RESOLUTION_INIT = 50;
-	private int resolution = RESOLUTION_INIT;
 	
 	private File defaultPath;
 	
 	private class MenuListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String cmd = e.getActionCommand();
-			if (cmd.equals("Load problem")) {
+			if (cmd.equals("Problem")) {
+				setAnimating(false);
+				vp.setDisplayingSolution(false);
+				setInfoText();
+			} else if (cmd.equals("Solution")) {
+				setAnimating(false);
+				vp.setDisplayingSolution(true);
+				setInfoText();
+			} else if (cmd.equals("Load problem")) {
+				setAnimating(false);
 				loadProblem();
 			} else if (cmd.equals("Load solution")) {
+				setAnimating(false);
 				loadSolution();
-			} else if (cmd.equals("Assume direct solution")) {
-				assumeDirectSolution();
 			} else if (cmd.equals("Exit")) {
 				container.setVisible(false);
 				System.exit(0);
@@ -104,7 +115,21 @@ public class Visualiser {
 			}
 		}
 	}
-
+	
+	private class ResizeListener implements ComponentListener {
+		@Override
+		public void componentResized(ComponentEvent e) {
+			updateTickSpacing();
+		}
+		@Override
+		public void componentHidden(ComponentEvent e) {}
+		@Override
+		public void componentMoved(ComponentEvent e) {}
+		@Override
+		public void componentShown(ComponentEvent e) {}
+	}
+	
+	private ResizeListener resizeListener = new ResizeListener();
 	private MenuListener menuListener = new MenuListener();
 	
 	private ChangeListener manualSliderListener = new ChangeListener() {
@@ -145,14 +170,6 @@ public class Visualiser {
 		}
 	};
 	
-	private ChangeListener resolutionListener = new ChangeListener() {
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			resolution = (Integer)resolutionSpinner.getValue();
-			vp.setResolution(resolution);
-		}
-	};
-	
 	private ActionListener playPauseListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
@@ -186,8 +203,20 @@ public class Visualiser {
 	
 	private void createComponents() {
 		vp = new VisualisationPanel(this);
+		JPanel wp = new JPanel(new BorderLayout());
+		wp.add(vp, BorderLayout.CENTER);
 		container.setLayout(new BorderLayout());
-		container.add(vp, BorderLayout.CENTER);
+		wp.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createEmptyBorder(5, 10, 10, 10),
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)));
+		container.add(wp, BorderLayout.CENTER);
+		
+		infoPanel = new JPanel();
+		infoLabel = new JLabel("No problem to display.");
+		//infoPanel.setBackground(Color.WHITE);
+		//infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		infoPanel.add(infoLabel);
+		container.add(infoPanel, BorderLayout.NORTH);
 		
 		createMenus();
 		createAnimationControls();
@@ -196,6 +225,7 @@ public class Visualiser {
 	private void createMenus() {
 		menuBar = new JMenuBar();
 		createFileMenu();
+		createDisplayMenu();
 		createAnimationMenu();
 		if (container instanceof JFrame) {
 			((JFrame)container).setJMenuBar(menuBar);
@@ -222,17 +252,31 @@ public class Visualiser {
 		loadSolutionItem.setEnabled(false);
 		fileMenu.add(loadSolutionItem);
 		
-		assumeDirectSolutionItem = new JMenuItem("Assume direct solution");
-		assumeDirectSolutionItem.setMnemonic(KeyEvent.VK_D);
-		assumeDirectSolutionItem.addActionListener(menuListener);
-		assumeDirectSolutionItem.setEnabled(false);
-		fileMenu.add(assumeDirectSolutionItem);
-		
 		fileMenu.addSeparator();
 		exitItem = new JMenuItem("Exit");
 		exitItem.setMnemonic(KeyEvent.VK_X);
 		exitItem.addActionListener(menuListener);
 		fileMenu.add(exitItem);
+	}
+	
+	private void createDisplayMenu() {
+		displayMenu = new JMenu("Display");
+		displayMenu.setMnemonic(KeyEvent.VK_D);
+		fileMenu.getAccessibleContext().setAccessibleDescription(
+				"Display the problem and solution.");
+		menuBar.add(displayMenu);
+		
+		problemItem = new JMenuItem("Problem");
+		problemItem.setMnemonic(KeyEvent.VK_P);
+		problemItem.addActionListener(menuListener);
+		problemItem.setEnabled(false);
+		displayMenu.add(problemItem);
+		
+		solutionItem = new JMenuItem("Solution");
+		solutionItem.setMnemonic(KeyEvent.VK_S);
+		solutionItem.addActionListener(menuListener);
+		solutionItem.setEnabled(false);
+		displayMenu.add(solutionItem);
 	}
 	
 	private void createAnimationMenu() {
@@ -274,6 +318,8 @@ public class Visualiser {
 		manualSlider.setFont(sliderFont);
 		manualSlider.addChangeListener(manualSliderListener);
 		manualSlider.addMouseListener(manualSliderClickListener);
+		manualSlider.setMinorTickSpacing(1);
+		manualSlider.addComponentListener(resizeListener);
 	
 		JLabel framerateLabel = new JLabel("Framerate");
 		framerateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -291,17 +337,6 @@ public class Visualiser {
 		frameratePanel.add(Box.createRigidArea(new Dimension(0, 2)));
 		frameratePanel.add(framerateSlider);
 		
-		JLabel resolutionLabel = new JLabel("Resolution");
-		resolutionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		resolutionSpinner = new JSpinner(new SpinnerNumberModel(RESOLUTION_INIT, 1, null, 10));
-		resolutionSpinner.addChangeListener(resolutionListener);
-		resolutionSpinner.setMaximumSize(new Dimension(200, 25));
-		JPanel resolutionPanel = new JPanel();
-		resolutionPanel.setLayout(new BoxLayout(resolutionPanel, BoxLayout.PAGE_AXIS));
-		resolutionPanel.add(resolutionLabel);
-		resolutionPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-		resolutionPanel.add(resolutionSpinner);
-		
 		playPauseButton = new JButton(playIcon);
 		playPauseButton.addActionListener(playPauseListener);
 		stopButton = new JButton(stopIcon);
@@ -312,17 +347,16 @@ public class Visualiser {
 		animationControls.add(manualLabel);
 		animationControls.add(Box.createRigidArea(new Dimension(0, 2)));
 		animationControls.add(manualSlider);
+		animationControls.add(Box.createRigidArea(new Dimension(0, 5)));
 		JPanel p2 = new JPanel();
 		p2.setLayout(new BoxLayout(p2, BoxLayout.LINE_AXIS));
 		p2.add(playPauseButton);
 		p2.add(Box.createRigidArea(new Dimension(10, 0)));
 		p2.add(stopButton);
 		p2.add(frameratePanel);
-		p2.add(Box.createRigidArea(new Dimension(20, 0)));
-		p2.add(resolutionPanel);
 		animationControls.add(p2);
 		animationControls.setVisible(false);
-		animationControls.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+		animationControls.setBorder(BorderFactory.createEmptyBorder(0, 10, 5, 10));
 		container.add(animationControls, BorderLayout.SOUTH);
 	}
 		
@@ -351,7 +385,6 @@ public class Visualiser {
 			showFileError(f);
 			setHasProblem(false);
 		}
-		vp.updateProblemSetup();
 	}
 	
 	private void loadProblem() {
@@ -379,12 +412,6 @@ public class Visualiser {
 		}
 		loadSolution(f);
 	}
-
-	private void assumeDirectSolution() {
-		vp.getProblemSetup().assumeDirectSolution();
-		setHasSolution(true);
-	}
-	
 	
 	private void playPause() {
 		if (!animating) {
@@ -392,18 +419,38 @@ public class Visualiser {
 		}
 		vp.playPauseAnimation();
 	}
+	
+	private void setInfoText() {
+		if (!hasProblem) {
+			infoLabel.setText("No problem to display.");
+		} else if (animating) {
+			infoLabel.setText("Play the animation, or use the slider to control it manually.");
+		} else if (vp.isDisplayingSolution()) {
+			infoLabel.setText("Displaying the solution.");
+		} else {
+			infoLabel.setText("Displaying the problem: blue = initial, green = goal, red = obstacle");
+		}
+	}
 
 	private void setHasProblem(boolean hasProblem) {
+		System.out.println("!");
 		this.hasProblem = hasProblem;
 		loadSolutionItem.setEnabled(hasProblem);
-		assumeDirectSolutionItem.setEnabled(hasProblem);
+		problemItem.setEnabled(hasProblem);
 		setHasSolution(false);
+		if (hasProblem) {
+			vp.repaint();
+		}
+		setInfoText();
 	}
 
 	private void setHasSolution(boolean hasSolution) {
 		this.hasSolution = hasSolution;
+		solutionItem.setEnabled(hasSolution);
 		animationMenu.setEnabled(hasSolution);
+		vp.setDisplayingSolution(hasSolution);
 		setAnimating(hasSolution);
+		setInfoText();
 	}
 	
 	private void setAnimating(boolean animating) {
@@ -417,18 +464,13 @@ public class Visualiser {
 			return;
 		}
 		this.animating = animating;
-		loadProblemItem.setEnabled(!animating);
-		loadSolutionItem.setEnabled(!animating);
-		assumeDirectSolutionItem.setEnabled(!animating);
 		stopItem.setEnabled(animating);
 		animationControls.setVisible(animating);
 		container.validate();
 		vp.calculateTransform();
 		vp.repaint();
+		setInfoText();
 	}
-
-	
-
 	
 	public void setPlaying(boolean playing) {
 		if (this.playing == playing) {
@@ -445,11 +487,47 @@ public class Visualiser {
 		playPauseButton.repaint();
 	}
 	
-	public void updateManualTicks() {
-		manualSlider.setMaximum(resolution * (vp.getProblemSetup().getPath().size() - 1));
-		manualSlider.setMajorTickSpacing(resolution);
-		manualSlider.setMinorTickSpacing(1);
-		manualSlider.setLabelTable(manualSlider.createStandardLabels(resolution));
+	public void updateMaximum() {
+		int maximum = vp.getProblemSetup().getPath().size() - 1;
+		manualSlider.setMaximum(maximum);
+		updateTickSpacing();
+	}
+	
+	public void updateSliderSpacing(JSlider slider) {
+		int width = slider.getBounds().width;
+		int max = slider.getMaximum();
+		int spacing = 1;
+		int mode = 1;
+		double pxPerLabel = (double)width * spacing / max;
+		if (pxPerLabel <= 0) {
+			return;
+		}
+		while (pxPerLabel <= 30) {
+			if (mode == 1) {
+				spacing *= 2;
+				pxPerLabel *= 2;
+				mode = 2;
+			} else if (mode == 2) {
+				spacing = spacing*5/2;
+				pxPerLabel *= 2.5;
+				mode = 5;
+			} else {
+				spacing *= 2;
+				pxPerLabel *= 2;
+				mode = 1;
+			}
+		}
+		slider.setMajorTickSpacing(spacing);
+		int min = slider.getMinimum();
+		if (min % spacing > 0) {
+			min += (spacing - (min % spacing));
+		}
+		slider.setLabelTable(slider.createStandardLabels(spacing, min));
+	}
+	
+	public void updateTickSpacing() {
+		updateSliderSpacing(manualSlider);
+		updateSliderSpacing(framerateSlider);
 	}
 	
 	public void setFrameNumber(int frameNumber) {

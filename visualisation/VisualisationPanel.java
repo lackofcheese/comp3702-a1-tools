@@ -12,35 +12,28 @@ import java.awt.event.ComponentListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 import javax.swing.Timer;
 
-public class VisualisationPanel extends JPanel {
+public class VisualisationPanel extends JComponent {
 	/** UID, as required by Swing */
 	private static final long serialVersionUID = -4286532773714402501L;
-	private static final double PAD_FACTOR = 0.05;
 	
 	private ProblemSetup problemSetup = new ProblemSetup();
 	private Visualiser visualiser;
 	
-	private double minWorldX;
-	private double maxWorldY;
-	private double worldWidth;
-	private double worldHeight;
-	private AffineTransform translation = null;
+	private AffineTransform translation = AffineTransform.getTranslateInstance(0, -1);
 	private AffineTransform transform = null;
 	
 	private State currentState;
 	private boolean animating = false;
+	private boolean displayingSolution = false;
 	private Timer animationTimer;
 	private int framePeriod = 20; // 50 FPS
-	private int resolution = 50; // 50 frames per solution step.
 	private Integer frameNumber = null;
 	private int maxFrameNumber;
-	private double stepIndex = 0;
 	
 	private class VisualisationListener implements ComponentListener {
 		@Override
@@ -57,31 +50,25 @@ public class VisualisationPanel extends JPanel {
 	
 	public VisualisationPanel(Visualiser visualiser) {
 		super();
+		this.setBackground(Color.WHITE);
+		this.setOpaque(true);
 		this.visualiser = visualiser;
 		this.addComponentListener(new VisualisationListener());
+	}
+	
+	public void setDisplayingSolution(boolean displayingSolution) {
+		this.displayingSolution = displayingSolution;
+		repaint();
+	}
+	
+	public boolean isDisplayingSolution() {
+		return displayingSolution;
 	}
 	
 	public void setFramerate(int framerate) {
 		this.framePeriod = 1000 / framerate;
 		if (animationTimer != null) {
 			animationTimer.setDelay(framePeriod);
-		}
-	}
-	
-	public void setResolution(int resolution) {
-		int oldResolution = this.resolution;
-		this.resolution = resolution;
-		maxFrameNumber = resolution * (problemSetup.getPath().size() - 1);
-		int newFrameNumber = (int)Math.round((double)frameNumber * resolution / oldResolution);
-		if (newFrameNumber > maxFrameNumber) {
-			newFrameNumber = maxFrameNumber;
-		}
-		if (resolution > oldResolution) {
-			visualiser.updateManualTicks();
-			gotoFrame(newFrameNumber);
-		} else {
-			gotoFrame(newFrameNumber);
-			visualiser.updateManualTicks();
 		}
 	}
 
@@ -94,7 +81,7 @@ public class VisualisationPanel extends JPanel {
 		}
 		animating = true;
 		gotoFrame(0);
-		maxFrameNumber = resolution * (problemSetup.getPath().size() - 1);
+		maxFrameNumber = problemSetup.getPath().size() - 1;
 		animationTimer = new Timer(framePeriod, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -109,7 +96,7 @@ public class VisualisationPanel extends JPanel {
 			}
 		});
 		visualiser.setPlaying(false);
-		visualiser.updateManualTicks();
+		visualiser.updateMaximum();
 	}
 	
 	public void gotoFrame(int frameNumber) {
@@ -118,16 +105,7 @@ public class VisualisationPanel extends JPanel {
 		}
 		this.frameNumber = frameNumber;
 		visualiser.setFrameNumber(frameNumber);
-		stepIndex = ((double)frameNumber) / resolution;
-		int flooredIndex = (int)Math.floor(stepIndex);
-		if (flooredIndex == stepIndex) {
-			currentState = problemSetup.getPath().get(flooredIndex);
-		} else {
-			State s0 = problemSetup.getPath().get(flooredIndex);
-			State s1 = problemSetup.getPath().get(flooredIndex + 1);
-			double t = stepIndex - flooredIndex;
-			currentState = State.interpolate(s0, s1, t); 
-		}
+		currentState = problemSetup.getPath().get(frameNumber);
 		repaint();
 	}
 	
@@ -140,7 +118,7 @@ public class VisualisationPanel extends JPanel {
 			animationTimer.stop();
 			visualiser.setPlaying(false);
 		} else {
-			if (stepIndex >= problemSetup.getPath().size() - 1) {
+			if (frameNumber >= maxFrameNumber) {
 				gotoFrame(0);
 			}
 			animationTimer.start();
@@ -157,38 +135,13 @@ public class VisualisationPanel extends JPanel {
 		frameNumber = null;
 	}
 	
-	
 	public ProblemSetup getProblemSetup() {
 		return problemSetup;
 	}
 	
-	public void updateProblemSetup() {
-		if (!problemSetup.problemLoaded()) {
-			repaint();
-			return;
-		}
-		
-		Rectangle2D bounds = problemSetup.getBounds();
-		double probWidth = bounds.getWidth();
-		double probHeight = bounds.getHeight();
-		minWorldX = bounds.getX() - PAD_FACTOR * probWidth;
-		maxWorldY = bounds.getY() +  (1 + PAD_FACTOR) * probHeight;
-		worldWidth = probWidth * (1 + 2*PAD_FACTOR);
-		worldHeight = probHeight * (1 + 2*PAD_FACTOR);
-		translation = AffineTransform.getTranslateInstance(
-				-minWorldX,
-				-maxWorldY);
-		calculateTransform();
-		repaint();
-	}
-	
 	public void calculateTransform() {
-		if (!problemSetup.problemLoaded()) {
-			return;
-		}
 		transform = AffineTransform.getScaleInstance(
-				getWidth() / worldWidth,
-				- getHeight() / worldHeight);
+				getWidth(), -getHeight());
 		transform.concatenate(translation);
 	}
 	
@@ -217,27 +170,37 @@ public class VisualisationPanel extends JPanel {
 			return;
 		}
 		Graphics2D g2 = (Graphics2D)g;
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, getWidth(), getHeight());
+
 		List<Obstacle> obstacles = problemSetup.getObstacles();
 		if (obstacles != null) {
 			g2.setColor(Color.red);
-			g2.setStroke(new BasicStroke(2));
 			for (Obstacle obs : problemSetup.getObstacles()) {
 				Shape transformed = transform.createTransformedShape(obs.getRect());
 				g2.fill(transformed);
 			}
 		}
 		
+		g2.setStroke(new BasicStroke(3));
 		if (!animating) {
-			g2.setColor(Color.blue);
-			g2.setStroke(new BasicStroke(5));
-			paintState(g, problemSetup.getInitialState());
-			
-			g2.setColor(Color.green);
-			g2.setStroke(new BasicStroke(5));
-			paintState(g, problemSetup.getGoalState());
+			if (displayingSolution) {
+				List<State> path = problemSetup.getPath();
+				int lastIndex = path.size() - 1;
+				for (int i = 0; i <= lastIndex; i++) {
+					float t = (float)i / lastIndex;
+					g2.setColor(new Color(0, t, 1-t));
+					paintState(g, path.get(i));
+				}
+			} else {
+				g2.setColor(Color.blue);	
+				paintState(g, problemSetup.getInitialState());
+				
+				g2.setColor(Color.green);
+				paintState(g, problemSetup.getGoalState());
+			}
 		} else {
 			g2.setColor(Color.blue);
-			g2.setStroke(new BasicStroke(5));
 			paintState(g, currentState);
 		}
 	}

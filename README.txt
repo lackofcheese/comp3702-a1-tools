@@ -3,8 +3,9 @@ A visualiser for COMP3702 Assignment 1, by Dimitri Klimenko (tutor).
 (1) Running the JAR
 To run it, simply run the JAR archive with Java 7 (double-clicking should work
 if Java is installed properly). If this doesn't work or you want to run it
-with a different version, please see the manual compilation instructions
-further below.
+with a different version, I recommend using Eclipse - simply add the contents
+of visualiser.zip to the "src" folder in a new project, and it should work.
+Alternatively, see the manual compilation instructions further below.
 
 You can also run it from the command line with optional
 command-line arguments:

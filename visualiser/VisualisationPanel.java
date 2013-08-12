@@ -1,6 +1,5 @@
 package visualiser;
 
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -18,17 +17,21 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
+import problem.Obstacle;
+import problem.ProblemSpec;
+import problem.ASVConfig;
+
 public class VisualisationPanel extends JComponent {
 	/** UID, as required by Swing */
 	private static final long serialVersionUID = -4286532773714402501L;
 	
-	private ProblemSetup problemSetup = new ProblemSetup();
+	private ProblemSpec problemSetup = new ProblemSpec();
 	private Visualiser visualiser;
 	
 	private AffineTransform translation = AffineTransform.getTranslateInstance(0, -1);
 	private AffineTransform transform = null;
 	
-	private State currentState;
+	private ASVConfig currentState;
 	private boolean animating = false;
 	private boolean displayingSolution = false;
 	private Timer animationTimer;
@@ -138,7 +141,7 @@ public class VisualisationPanel extends JComponent {
 		frameNumber = null;
 	}
 	
-	public ProblemSetup getProblemSetup() {
+	public ProblemSpec getProblemSetup() {
 		return problemSetup;
 	}
 	
@@ -148,7 +151,7 @@ public class VisualisationPanel extends JComponent {
 		transform.concatenate(translation);
 	}
 	
-	public void paintState(Graphics2D g2, State s) {
+	public void paintState(Graphics2D g2, ASVConfig s) {
 		if (s == null) {
 			return;
 		}
@@ -191,7 +194,7 @@ public class VisualisationPanel extends JComponent {
 		g2.setStroke(new BasicStroke(3));
 		if (!animating) {
 			if (displayingSolution) {
-				List<State> path = problemSetup.getPath();
+				List<ASVConfig> path = problemSetup.getPath();
 				int lastIndex = path.size() - 1;
 				for (int i = 0; i < lastIndex; i += samplingPeriod) {
 					float t = (float)i / lastIndex;

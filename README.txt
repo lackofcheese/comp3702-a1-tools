@@ -1,11 +1,12 @@
 A visualiser and tester for COMP3702 Assignment 1, by Dimitri Klimenko (tutor).
 
+
 (1) Running the Visualiser
 To run it, simply run visualiser.jar with Java 7 (double-clicking should work
 if Java is installed properly). If this doesn't work or you want to run it
 with a different version, I recommend using Eclipse - simply add the contents
-of visualiser.zip to the "src" folder in a new project, and it should work.
-Alternatively, see the manual compilation instructions in section (4).
+of comp3702-a1-tools.zip to the "src" folder in a new project.
+Alternatively, see the manual compilation instructions in section (3).
 
 You can also run it from the command line with optional
 command-line arguments:
@@ -14,37 +15,28 @@ command-line arguments:
 For example, using the test cases provided here:
     java -jar visualiser.jar test_problem.txt test_solution.txt
 
+Note that these commands may require you to use full path to java.exe,
+as per section (4).
+
 
 (2) Running the Tester
-The recommended way to run the tests is by doing so using Eclipse; as stated before,
-add the contents of the ZIP to the "src" folder and you should be able to run the tests.
+The recommended way to run the tests is by doing so using Eclipse.
+Simply add the contents of comp3702-a1-tools.zip to the "src" folder
+of a new project and you should be able to run the tests.
 
-To select which files to run the tests on, edit the values of the variables problemPath
-and solutionPath inside the Tester class.
+To select which files to run the tests on, edit the values of the variables 
+problemPath and solutionPath inside the Tester class.
 
-Alternatively, compile the source code as per section (4), and you can use either
-runtests.bat or runtests.sh to run the tests; the command-line usage is:
+Alternatively, compile the source code as per section (3), and you can use
+either runtests.bat or runtests.sh to run the tests; the usage is:
     runtests [problem-file] [solution-file]
-where the defaults are problem.txt and solution.txt
 
 
-(3) Command lines and the Java Path
-Note that for the command-line commands to work Java would have to be on your
-system path; if not, you'll have to specify a full path instead of just "java",
-e.g.
-"C:\Program Files (x86)\Java\jdk1.7.0_25\bin\java.exe"
-or
-/usr/java/jdk1.7.0_25/bin/java
-
-If you're using the .bat or .sh scripts you will need to replace the commands "java"
-and "javac" with their full paths.
-
-
-(4) Manual Compilation
+(3) Manual Compilation
 If you want to compile and run the code manually, you will need to do the
 following:
 1) Extract visualiser.zip into your desired folder.
-2) Replace the paths in compile.bat or compile.sh as per (3), if required.
+2) Replace the "javac" in compile.bat or compile.sh as per (4), if required.
 3) From within the folder, run compile.bat or compile.sh
 
 To run the visualiser, you may now use the command
@@ -52,6 +44,17 @@ To run the visualiser, you may now use the command
 As with the JAR, you can add command-line arguments, e.g.
     java visualiser/Visualiser test_problem.txt test_solution.txt
 
-To run the tests, use the command
-    runtests [problem-file] [solution-file]
-as mentioned above.
+The commands above and the tester commands may require full paths;
+see section (4).
+
+
+(4) The command line and the system path
+Note that for the command-line commands to work Java would have to be on your
+system path; if not, you'll have to specify a full path instead of just 
+"java", e.g.
+"C:\Program Files (x86)\Java\jdk1.7.0_25\bin\java.exe"
+or
+/usr/java/jdk1.7.0_25/bin/java
+
+If you're using the .bat or .sh scripts you will need to replace the commands
+"java" and "javac" with their full paths.

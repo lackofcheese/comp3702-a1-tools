@@ -21,8 +21,9 @@ as per section (4).
 
 (2) Running the Tester
 The recommended way to run the tests is by doing so using Eclipse.
-Simply add the contents of comp3702-a1-tools.zip to the "src" folder
-of a new project and you should be able to run the tests.
+Simply add the contents of comp3702-a1-tools.zip to the "src" folder, and 
+then make sure to add JUnit 4 to the project's build path (right click on
+the project, go to Build Path->Add Libraries, and then choose JUnit 4).
 
 To select which files to run the tests on, edit the values of the variables 
 problemPath and solutionPath inside the Tester class.

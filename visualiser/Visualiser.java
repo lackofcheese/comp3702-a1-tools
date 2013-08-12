@@ -565,9 +565,6 @@ public class Visualiser {
 			vis.loadProblem(new File(args[0]));
 			if (vis.hasProblem && args.length >= 2) {
 				vis.loadSolution(new File(args[1]));
-				if (vis.hasSolution) {
-					vis.vp.initAnimation();
-				}
 			}
 		}
 		frame.setSize(800, 600);

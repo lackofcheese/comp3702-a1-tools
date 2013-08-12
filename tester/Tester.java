@@ -78,10 +78,14 @@ public class Tester {
 		ps = new ProblemSpec();
 		if (problemPath == null) {
 			problemPath = System.getenv("PROBLEM_PATH");
+			if (problemPath != null) {
+				problemPath = problemPath.replaceAll("\"", "");
+			}
 		}
 		if (problemPath == null) {
 			problemPath = DEFAULT_PROBLEM_PATH;
 		}
+		System.out.println(problemPath);
 		try {
 			ps.loadProblem(problemPath);
 		} catch (IOException e) {
@@ -91,10 +95,14 @@ public class Tester {
 		
 		if (solutionPath == null) {
 			solutionPath = System.getenv("SOLUTION_PATH");
+			if (solutionPath != null) {
+				solutionPath = solutionPath.replaceAll("\"", "");
+			}
 		}
 		if (solutionPath == null) {
 			solutionPath = DEFAULT_SOLUTION_PATH;
 		}
+		System.out.println(solutionPath);
 		try {
 			ps.loadSolution(solutionPath);
 		} catch (IOException e) {

@@ -5,7 +5,7 @@ A visualiser and tester for COMP3702 Assignment 1, by Dimitri Klimenko (tutor).
 To run it, simply run visualiser.jar with Java 7 (double-clicking should work
 if Java is installed properly). If this doesn't work or you want to run it
 with a different version, I recommend using Eclipse - simply add the contents
-of comp3702-a1-tools.zip to the "src" folder in a new project.
+of a1-tools.zip to a new project.
 Alternatively, see the manual compilation instructions in section (3).
 
 You can also run it from the command line with optional
@@ -21,7 +21,7 @@ as per section (4).
 
 (2) Running the Tester
 The recommended way to run the tests is by doing so using Eclipse.
-Simply add the contents of comp3702-a1-tools.zip to the "src" folder, and 
+Simply add the contents of a1-tools.zip to a new project, and 
 then make sure to add JUnit 4 to the project's build path (right click on
 the project, go to Build Path->Add Libraries, and then choose JUnit 4).
 
@@ -31,22 +31,24 @@ problemPath and solutionPath inside the Tester class.
 Alternatively, compile the source code as per section (3), and you can use
 either runtests.bat or runtests.sh to run the tests; the usage is:
     runtests [problem-file] [solution-file]
+Note that you may need to update your system path or change the commands in
+the runtests script as per (4).
 
 
 (3) Manual Compilation
 If you want to compile and run the code manually, you will need to do the
 following:
-1) Extract visualiser.zip into your desired folder.
-2) Replace the "javac" in compile.bat or compile.sh as per (4), if required.
-3) From within the folder, run compile.bat or compile.sh
+1) Download and install Apache Ant.
+2) Extract a1-tools.zip to the desired folder.
+3) From within that folder, run the command
+    ant
 
 To run the visualiser, you may now use the command
-    java visualiser/Visualiser
+    java -cp bin visualiser/Visualiser
 As with the JAR, you can add command-line arguments, e.g.
-    java visualiser/Visualiser test_problem.txt test_solution.txt
+    java -cp bin visualiser/Visualiser problem.txt solution.txt
 
-The commands above and the tester commands may require full paths;
-see section (4).
+The commands above may require full paths; see section (4).
 
 
 (4) The command line and the system path

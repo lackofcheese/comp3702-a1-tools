@@ -11,4 +11,4 @@ then
 else
     export SOLUTION_PATH="$2"
 fi
-java -cp ".;junit-4.11.jar;hamcrest-core-1.3.jar" org.junit.runner.JUnitCore tester.Tester
+java -cp "bin;junit-4.11.jar;hamcrest-core-1.3.jar" org.junit.runner.JUnitCore tester.Tester

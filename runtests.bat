@@ -9,4 +9,4 @@ if [%2] == [] (
 ) else (
     SET SOLUTION_PATH="%2"
 )
-java -cp ".;junit-4.11.jar;hamcrest-core-1.3.jar" org.junit.runner.JUnitCore tester.Tester
+java -cp "bin;junit-4.11.jar;hamcrest-core-1.3.jar" org.junit.runner.JUnitCore tester.Tester

@@ -29,10 +29,10 @@ public class Tester {
 	
 	/** The default problem file, if none is given above or
 	 * in the environment variable PROBLEM_PATH */
-	public static final String DEFAULT_PROBLEM_PATH = "src/problem.txt";
+	public static final String DEFAULT_PROBLEM_PATH = "problem.txt";
 	/** The default solution file, if none is given above or
 	 * in the environment variable SOLUTION_PATH */
-	public static final String DEFAULT_SOLUTION_PATH = "src/solution.txt";
+	public static final String DEFAULT_SOLUTION_PATH = "solution.txt";
 	
 	/** The maximum distance any ASV can travel between two states */
 	public static final double MAX_STEP = 0.001;
@@ -85,7 +85,6 @@ public class Tester {
 		if (problemPath == null) {
 			problemPath = DEFAULT_PROBLEM_PATH;
 		}
-		System.out.println(problemPath);
 		try {
 			ps.loadProblem(problemPath);
 		} catch (IOException e) {
@@ -102,7 +101,6 @@ public class Tester {
 		if (solutionPath == null) {
 			solutionPath = DEFAULT_SOLUTION_PATH;
 		}
-		System.out.println(solutionPath);
 		try {
 			ps.loadSolution(solutionPath);
 		} catch (IOException e) {

@@ -13,7 +13,7 @@ command-line arguments:
     java -jar visualiser.jar [problem-file] [solution-file]
 
 For example, using the test cases provided here:
-    java -jar visualiser.jar test_problem.txt test_solution.txt
+    java -jar visualiser.jar problem.txt solution.txt
 
 Note that these commands may require you to use full path to java.exe,
 as per section (4).

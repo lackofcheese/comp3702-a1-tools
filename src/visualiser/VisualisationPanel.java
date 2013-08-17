@@ -191,7 +191,7 @@ public class VisualisationPanel extends JComponent {
 			}
 		}
 		
-		g2.setStroke(new BasicStroke(3));
+		g2.setStroke(new BasicStroke(2));
 		if (!animating) {
 			if (displayingSolution) {
 				List<ASVConfig> path = problemSetup.getPath();

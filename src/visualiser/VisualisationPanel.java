@@ -41,25 +41,11 @@ public class VisualisationPanel extends JComponent {
 	
 	private int samplingPeriod = 100;
 	
-	private class VisualisationListener implements ComponentListener {
-		@Override
-		public void componentResized(ComponentEvent e) {
-			calculateTransform();
-		}
-		@Override
-		public void componentHidden(ComponentEvent e) {}
-		@Override
-		public void componentMoved(ComponentEvent e) {}
-		@Override
-		public void componentShown(ComponentEvent e) {}
-	}
-	
 	public VisualisationPanel(Visualiser visualiser) {
 		super();
 		this.setBackground(Color.WHITE);
 		this.setOpaque(true);
 		this.visualiser = visualiser;
-		this.addComponentListener(new VisualisationListener());
 	}
 	
 	public void setDisplayingSolution(boolean displayingSolution) {
@@ -178,6 +164,7 @@ public class VisualisationPanel extends JComponent {
 		if (!problemSetup.problemLoaded()) {
 			return;
 		}
+		calculateTransform();
 		Graphics2D g2 = (Graphics2D)graphics;
 		g2.setColor(Color.WHITE);
 		g2.fillRect(0, 0, getWidth(), getHeight());

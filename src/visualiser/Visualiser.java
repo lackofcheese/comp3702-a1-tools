@@ -223,9 +223,8 @@ public class Visualiser {
 				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED)));
 		container.add(wp, BorderLayout.CENTER);
 		
-		//JPanel infoPanelWrapper = new JPanel(new BorderLayout());
 		infoPanel = new JPanel();
-		infoPanel.setLayout(new FlowLayout()); //(infoPanel, BoxLayout.LINE_AXIS));
+		infoPanel.setLayout(new FlowLayout());
 		
 		infoLabel = new JLabel("No problem to display.");
 		samplingSpinner = new JSpinner(new SpinnerNumberModel(SAMPLING_PERIOD_INIT, 1, null, 1));
@@ -236,7 +235,6 @@ public class Visualiser {
 		infoPanel.add(infoLabel);
 		infoPanel.add(samplingSpinner);
 		
-		//infoPanelWrapper.add(infoPanel, BorderLayout.CENTER);
 		container.add(infoPanel, BorderLayout.NORTH);
 		
 		createMenus();

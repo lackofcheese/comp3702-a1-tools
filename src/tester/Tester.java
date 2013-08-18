@@ -5,17 +5,15 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
+import problem.ASVConfig;
 import problem.Obstacle;
 import problem.ProblemSpec;
-import problem.ASVConfig;
 
 public class Tester {
 	/** The path for the problem file. If this is not null initially,

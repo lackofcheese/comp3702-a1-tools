@@ -96,10 +96,12 @@ public class Visualiser {
 				setAnimating(false);
 				vp.setDisplayingSolution(false);
 				setInfoText();
+				vp.repaint();
 			} else if (cmd.equals("Solution")) {
 				setAnimating(false);
 				vp.setDisplayingSolution(true);
 				setInfoText();
+				vp.repaint();
 			} else if (cmd.equals("Load problem")) {
 				setAnimating(false);
 				loadProblem();

@@ -6,42 +6,49 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Represents a configuration of the ASVs.
- * This class doesn't do any validity checking - see the code in tester.Tester for this.
+ * Represents a configuration of the ASVs. This class doesn't do any validity
+ * checking - see the code in tester.Tester for this.
+ * 
  * @author lackofcheese
  */
 public class ASVConfig {
 	/** The position of each ASV */
 	private List<Point2D> asvPositions = new ArrayList<Point2D>();
-	
+
 	/**
 	 * Constructor. Takes an array of 2n x and y coordinates, where n is the
 	 * number of ASVs
-	 * @param coords the x- and y-coordinates of the ASVs.
+	 * 
+	 * @param coords
+	 *            the x- and y-coordinates of the ASVs.
 	 */
 	public ASVConfig(double[] coords) {
 		for (int i = 0; i < coords.length / 2; i++) {
-			asvPositions.add(new Point2D.Double(coords[i*2], coords[i*2+1]));
+			asvPositions.add(new Point2D.Double(coords[i * 2],
+					coords[i * 2 + 1]));
 		}
 	}
-	
+
 	/**
-	 * Constructs an ASVConfig from a space-separated string of
-	 * x- and y- coordinates
-	 * @param asvCount the number of ASVs to read.
-	 * @param str the String containing the coordinates.
+	 * Constructs an ASVConfig from a space-separated string of x- and y-
+	 * coordinates
+	 * 
+	 * @param asvCount
+	 *            the number of ASVs to read.
+	 * @param str
+	 *            the String containing the coordinates.
 	 */
 	public ASVConfig(int asvCount, String str) {
 		String[] tokens = str.trim().split("\\s+");
 		for (int i = 0; i < asvCount; i++) {
-			asvPositions.add(new Point2D.Double(
-					Double.valueOf(tokens[i*2]), 
-					Double.valueOf(tokens[i*2+1])));
+			asvPositions.add(new Point2D.Double(Double.valueOf(tokens[i * 2]),
+					Double.valueOf(tokens[i * 2 + 1])));
 		}
 	}
-	
+
 	/**
 	 * Returns a space-separated string of the ASV coordinates.
+	 * 
 	 * @return a space-separated string of the ASV coordinates.
 	 */
 	public String toString() {
@@ -56,11 +63,13 @@ public class ASVConfig {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
-	 * Returns the maximum straight-line distance between the ASVs in this
-	 * state vs. the other state, or -1 if the ASV counts don't match.
-	 * @param otherState the other state to compare.
+	 * Returns the maximum straight-line distance between the ASVs in this state
+	 * vs. the other state, or -1 if the ASV counts don't match.
+	 * 
+	 * @param otherState
+	 *            the other state to compare.
 	 * @return the maximum straight-line distance for any ASV.
 	 */
 	public double getMaxDistance(ASVConfig otherState) {
@@ -69,48 +78,57 @@ public class ASVConfig {
 		}
 		double maxDistance = 0;
 		for (int i = 0; i < this.getASVCount(); i++) {
-			double distance = this.getPosition(i).distance(otherState.getPosition(i));
+			double distance = this.getPosition(i).distance(
+					otherState.getPosition(i));
 			if (distance > maxDistance) {
 				maxDistance = distance;
 			}
 		}
 		return maxDistance;
 	}
-	
+
 	/**
-	 * Returns whether this configuration fits wholly within the given rectangle.
-	 * @param bounds the rectangle to test against.
-	 * @return whether this configuration fits wholly within the given rectangle.
+	 * Returns whether this configuration fits wholly within the given
+	 * rectangle.
+	 * 
+	 * @param bounds
+	 *            the rectangle to test against.
+	 * @return whether this configuration fits wholly within the given
+	 *         rectangle.
 	 */
 	public boolean fitsBounds(Rectangle2D bounds) {
 		for (Point2D p : asvPositions) {
 			if (!bounds.contains(p)) {
 				return false;
 			}
-			
+
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Returns the position of the ASV with the given number.
-	 * @param asvNo the number of the ASV.
+	 * 
+	 * @param asvNo
+	 *            the number of the ASV.
 	 * @return the position of the ASV with the given number.
 	 */
 	public Point2D getPosition(int asvNo) {
 		return asvPositions.get(asvNo);
 	}
-	
+
 	/**
 	 * Returns the number of ASVs in this configuration.
+	 * 
 	 * @return the number of ASVs in this configuration.
 	 */
 	public int getASVCount() {
 		return asvPositions.size();
 	}
-	
+
 	/**
 	 * Returns the positions of all the ASVs, in order.
+	 * 
 	 * @return the positions of all the ASVs, in order.
 	 */
 	public List<Point2D> getASVPositions() {

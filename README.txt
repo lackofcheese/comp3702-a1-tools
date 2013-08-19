@@ -30,7 +30,8 @@ then add the command line arguments for Tester as per the above specifications.
 The [-e maxError] argument allows you to specify the maximum allowable
 floating point error; the default value is 1e-5.
 
-The [-v] argument gives more detailed output (not yet implemented).
+The [-v] argument gives the line number for each invalid configuration whenever
+one of the tests fails.
 
 Specifying a problem file without a solution file will simply verify that the
 initial and goal states are valid; if a solution file is also given, all

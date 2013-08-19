@@ -83,8 +83,8 @@ public class Tester {
 	public boolean testInitialFirst(int testNo, boolean verbose) {
 		System.out.println(String.format("Test #%d: Initial state", testNo));
 		if (!hasInitialFirst()) {
-			System.out
-					.println("FAILED: Solution path must start at initial state.");
+			System.out.println("FAILED: "
+					+ "Solution path must start at initial state.");
 			return false;
 		} else {
 			System.out.println("Passed.");
@@ -127,6 +127,21 @@ public class Tester {
 	}
 
 	/**
+	 * Returns a copy of list where each value is incremented by delta.
+	 * 
+	 * @param list
+	 *            the list of integers to add to.
+	 * @return a copy of list where each value is incremented by delta.
+	 */
+	public List<Integer> addToAll(List<Integer> list, int delta) {
+		List<Integer> result = new ArrayList<Integer>();
+		for (int i : list) {
+			result.add(i + delta);
+		}
+		return result;
+	}
+
+	/**
 	 * Checks that the steps in between configurations do not exceed the maximum
 	 * primitive step distance.
 	 */
@@ -137,6 +152,10 @@ public class Tester {
 			System.out.println(String.format(
 					"FAILED: Distance exceeds 0.001 for %d of %d step(s).",
 					badSteps.size(), ps.getPath().size() - 1));
+			if (verbose) {
+				System.out.println("Starting line for each invalid step:");
+				System.out.println(addToAll(badSteps, 2));
+			}
 			return false;
 		} else {
 			System.out.println("Passed.");
@@ -187,6 +206,12 @@ public class Tester {
 			System.out.println(String.format(
 					"FAILED: Invalid boom length for %d of %d state(s).",
 					badStates.size(), ps.getPath().size()));
+			if (verbose) {
+				if (verbose) {
+					System.out.println("Line for each invalid cfg:");
+					System.out.println(addToAll(badStates, 2));
+				}
+			}
 			return false;
 		} else {
 			System.out.println("Passed.");
@@ -243,6 +268,10 @@ public class Tester {
 			System.out.println(String.format(
 					"FAILED: %d of %d state(s) are not convex.",
 					badStates.size(), ps.getPath().size()));
+			if (verbose) {
+				System.out.println("Line for each invalid cfg:");
+				System.out.println(addToAll(badStates, 2));
+			}
 			return false;
 		} else {
 			System.out.println("Passed.");
@@ -311,6 +340,10 @@ public class Tester {
 			System.out.println(String.format(
 					"FAILED: %d of %d state(s) have insufficient area.",
 					badStates.size(), ps.getPath().size()));
+			if (verbose) {
+				System.out.println("Line for each invalid cfg:");
+				System.out.println(addToAll(badStates, 2));
+			}
 			return false;
 		} else {
 			System.out.println("Passed.");
@@ -361,10 +394,13 @@ public class Tester {
 		System.out.println(String.format("Test #%d: Bounds", testNo));
 		List<Integer> badStates = getOutOfBoundsStates();
 		if (!badStates.isEmpty()) {
-			System.out
-					.println(String
-							.format("FAILED: %d of %d state(s) go out of the workspace bounds.",
-									badStates.size(), ps.getPath().size()));
+			System.out.println(String.format("FAILED: %d of %d"
+					+ " state(s) go out of the workspace bounds.",
+					badStates.size(), ps.getPath().size()));
+			if (verbose) {
+				System.out.println("Line for each invalid cfg:");
+				System.out.println(addToAll(badStates, 2));
+			}
 			return false;
 		} else {
 			System.out.println("Passed.");
@@ -399,6 +435,10 @@ public class Tester {
 			System.out.println(String.format(
 					"FAILED: %d of %d state(s) collide with obstacles.",
 					badStates.size(), ps.getPath().size()));
+			if (verbose) {
+				System.out.println("Line for each invalid cfg:");
+				System.out.println(addToAll(badStates, 2));
+			}
 			return false;
 		} else {
 			System.out.println("Passed.");
@@ -426,13 +466,13 @@ public class Tester {
 	}
 
 	/**
-	 * Returns whether the given configuration collides with the given obstacle.
+	 * Returns whether the given config collides with the given obstacle.
 	 * 
 	 * @param s
 	 *            the configuration to test.
 	 * @param o
 	 *            the obstacle to test against.
-	 * @return whether the given configuration collides with the given obstacle.
+	 * @return whether the given config collides with the given obstacle.
 	 */
 	public boolean hasCollision(ASVConfig s, Obstacle o) {
 		Rectangle2D lenientRect = grow(o.getRect(), -maxError);
@@ -521,8 +561,8 @@ public class Tester {
 			}
 		}
 		if (problemPath == null) {
-			System.out
-					.println("Usage: tester [-e maxError] [-v] problem-file [solution-file]");
+			System.out.println("Usage: tester [-e maxError] [-v] "
+					+ "problem-file [solution-file]");
 			return;
 		}
 		System.out.println("Test #0: Loading files");

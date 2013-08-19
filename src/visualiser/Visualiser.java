@@ -593,7 +593,7 @@ public class Visualiser {
 				vis.loadSolution(new File(args[1]));
 			}
 		}
-		frame.setSize(800, 600);
+		frame.setSize(700, 766);
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);

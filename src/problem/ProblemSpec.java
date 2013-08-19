@@ -134,6 +134,37 @@ public class ProblemSpec {
 	}
 
 	/**
+	 * Assumes that a path can be taken directly from the initial configuration
+	 * to the goal.
+	 */
+	public void assumeDirectSolution() {
+		if (!problemLoaded) {
+			return;
+		}
+		path = new ArrayList<ASVConfig>();
+		path.add(initialState);
+		path.add(goalState);
+		solutionLoaded = true;
+		solutionCost = calculateTotalCost();
+	}
+
+	/**
+	 * Returns the true total cost of the currently loaded solution.
+	 * 
+	 * @return the true total cost of the currently loaded solution.
+	 */
+	public double calculateTotalCost() {
+		double cost = 0;
+		ASVConfig c0 = path.get(0);
+		for (int i = 1; i < path.size(); i++) {
+			ASVConfig c1 = path.get(i);
+			cost += c0.totalDistance(c1);
+			c0 = c1;
+		}
+		return cost;
+	}
+
+	/**
 	 * Returns the number of ASVs in each configuration.
 	 * 
 	 * @return the number of ASVs in each configuration.

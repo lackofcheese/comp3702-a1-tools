@@ -6,40 +6,13 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.junit.*;
+import java.util.ArrayList;
 
 import problem.ASVConfig;
 import problem.Obstacle;
 import problem.ProblemSpec;
 
 public class Tester {
-	/**
-	 * The path for the problem file. If this is not null initially, that value
-	 * will automatically be used
-	 */
-	public String problemPath = null;
-	/**
-	 * The path for the solution file. If this is not null initially, that value
-	 * will automatically be used
-	 */
-	public String solutionPath = null;
-	/** Remembers the specifications of the problem. */
-	private ProblemSpec ps;
-
-	/**
-	 * The default problem file, if none is given above or in the environment
-	 * variable PROBLEM_PATH
-	 */
-	public static final String DEFAULT_PROBLEM_PATH = "problem.txt";
-	/**
-	 * The default solution file, if none is given above or in the environment
-	 * variable SOLUTION_PATH
-	 */
-	public static final String DEFAULT_SOLUTION_PATH = "solution.txt";
-
 	/** The maximum distance any ASV can travel between two states */
 	public static final double MAX_STEP = 0.001;
 	/** The minimum allowable boom length */
@@ -48,6 +21,8 @@ public class Tester {
 	public static final double MAX_BOOM_LENGTH = 0.075;
 	/** The workspace bounds */
 	public static final Rectangle2D BOUNDS = new Rectangle2D.Double(0, 0, 1, 1);
+	/** The default value for maximum error */
+	public static final double DEFAULT_MAX_ERROR = 1e-5;
 
 	/**
 	 * Returns the minimum area required for the given number of ASVs.
@@ -61,103 +36,131 @@ public class Tester {
 		return Math.PI * radius * radius;
 	}
 
+	/**
+	 * Creates a new Rectangle2D that is grown by delta in each direction
+	 * compared to the given Rectangle2D.
+	 * 
+	 * @param rect
+	 *            the Rectangle2D to expand.
+	 * @param delta
+	 *            the amount to expand by.
+	 * @return a Rectangle2D expanded by delta in each direction.
+	 */
 	public static Rectangle2D grow(Rectangle2D rect, double delta) {
 		return new Rectangle2D.Double(rect.getX() - delta, rect.getY() - delta,
 				rect.getWidth() + delta * 2, rect.getHeight() + delta * 2);
 	}
 
-	/** The maximum allowable error in any coordinate. */
-	public static final double MAX_COORD_ERROR = 0.00001;
-	/** The maximum allowable error in the area. */
-	public static final double MAX_AREA_ERROR = 0.00001;
+	/** Remembers the specifications of the problem. */
+	private ProblemSpec ps = new ProblemSpec();
+	/** The maximum error allowed by this Tester */
+	private double maxError;
 	/** The workspace bounds, with allowable error. */
-	public static final Rectangle2D LENIENT_BOUNDS = grow(BOUNDS,
-			MAX_COORD_ERROR);
+	private Rectangle2D lenientBounds;
 
 	/**
-	 * Loads the problem and solution files into the ProblemSpec.
+	 * Constructor. Creates a Tester with the default value for maximum error.
 	 */
-	@Before
-	public void setUp() {
-		ps = new ProblemSpec();
-		if (problemPath == null) {
-			problemPath = System.getenv("PROBLEM_PATH");
-			if (problemPath != null) {
-				problemPath = problemPath.replaceAll("\"", "");
-			}
-		}
-		if (problemPath == null) {
-			problemPath = DEFAULT_PROBLEM_PATH;
-		}
-		try {
-			ps.loadProblem(problemPath);
-		} catch (IOException e) {
-			Assert.fail("Error loading " + problemPath + ": " + e.getMessage());
-			return;
-		}
+	public Tester() {
+		this(DEFAULT_MAX_ERROR);
+	}
 
-		if (solutionPath == null) {
-			solutionPath = System.getenv("SOLUTION_PATH");
-			if (solutionPath != null) {
-				solutionPath = solutionPath.replaceAll("\"", "");
-			}
-		}
-		if (solutionPath == null) {
-			solutionPath = DEFAULT_SOLUTION_PATH;
-		}
-		try {
-			ps.loadSolution(solutionPath);
-		} catch (IOException e) {
-			Assert.fail("Error loading " + solutionPath + ": " + e.getMessage());
-			return;
-		}
+	/**
+	 * Constructor. Creates a Tester with the given maximum error.
+	 * 
+	 * @param maxError
+	 *            the maximum allowable error.
+	 */
+	public Tester(double maxError) {
+		this.maxError = maxError;
+		lenientBounds = grow(BOUNDS, maxError);
 	}
 
 	/**
 	 * Checks that the first configuration in the solution path is the initial
 	 * configuration.
 	 */
-	@Test
-	public void testInitialFirst() {
-		List<ASVConfig> path = ps.getPath();
-		Assert.assertTrue("Solution path must start at initial state.", path
-				.get(0).getMaxDistance(ps.getInitialState()) <= MAX_COORD_ERROR);
+	public boolean testInitialFirst(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Initial state", testNo));
+		if (!hasInitialFirst()) {
+			System.out
+					.println("FAILED: Solution path must start at initial state.");
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns whether the first cfg is the initial cfg.
+	 * 
+	 * @return whether the first cfg is the initial cfg.
+	 */
+	public boolean hasInitialFirst() {
+		return ps.getPath().get(0).maxDistance(ps.getInitialState()) <= maxError;
 	}
 
 	/**
 	 * Checks that the last configuration in the solution path is the goal
 	 * configuration.
 	 */
-	@Test
-	public void testGoalLast() {
+	public boolean testGoalLast(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Goal state", testNo));
+		if (!hasGoalLast()) {
+			System.out.println("FAILED: Solution path must end at goal state.");
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns whether the last cfg is the goal cfg.
+	 * 
+	 * @return whether the last cfg is the goal cfg.
+	 */
+	public boolean hasGoalLast() {
 		List<ASVConfig> path = ps.getPath();
-		Assert.assertTrue(
-				"Solution path must end at goal state.",
-				path.get(path.size() - 1).getMaxDistance(ps.getGoalState()) <= MAX_COORD_ERROR);
+		return path.get(path.size() - 1).maxDistance(ps.getGoalState()) <= maxError;
 	}
 
 	/**
 	 * Checks that the steps in between configurations do not exceed the maximum
 	 * primitive step distance.
 	 */
-	@Test
-	public void testValidSteps() {
-		Map<List<Integer>, List<ASVConfig>> badSteps = new TreeMap<List<Integer>, List<ASVConfig>>();
+	public boolean testValidSteps(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Step sizes", testNo));
+		List<Integer> badSteps = getInvalidSteps();
+		if (!badSteps.isEmpty()) {
+			System.out.println(String.format(
+					"FAILED: Distance exceeds 0.001 for %d of %d step(s).",
+					badSteps.size(), ps.getPath().size() - 1));
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns the preceding path indices of any invalid steps.
+	 * 
+	 * @return the preceding path indices of any invalid steps.
+	 */
+	private List<Integer> getInvalidSteps() {
+		List<Integer> badSteps = new ArrayList<Integer>();
 		List<ASVConfig> path = ps.getPath();
 		ASVConfig state = path.get(0);
 		for (int i = 1; i < path.size(); i++) {
 			ASVConfig nextState = path.get(i);
 			if (!isValidStep(state, nextState)) {
-				badSteps.put(Arrays.asList(i - 1, i),
-						Arrays.asList(state, nextState));
+				badSteps.add(i - 1);
 			}
 			state = nextState;
 		}
-		String message = String.format(
-				"Distance exceeds 0.001 for %d pair(s) of adjacent states.",
-				badSteps.size());
-		Assert.assertEquals(message,
-				new TreeMap<List<Integer>, List<ASVConfig>>(), badSteps);
+		return badSteps;
 	}
 
 	/**
@@ -170,26 +173,41 @@ public class Tester {
 	 * @return whether the step from s0 to s1 is a valid primitive step.
 	 */
 	private boolean isValidStep(ASVConfig s0, ASVConfig s1) {
-		return (s0.getMaxDistance(s1) <= MAX_STEP + MAX_COORD_ERROR);
+		return (s0.maxDistance(s1) <= MAX_STEP + maxError);
 	}
 
 	/**
 	 * Checks that the booms in each configuration have lengths in the allowable
 	 * range.
 	 */
-	@Test
-	public void testBoomLengths() {
-		Map<Integer, ASVConfig> badStates = new TreeMap<Integer, ASVConfig>();
+	public boolean testBoomLengths(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Boom lengths", testNo));
+		List<Integer> badStates = getInvalidBoomStates();
+		if (!badStates.isEmpty()) {
+			System.out.println(String.format(
+					"FAILED: Invalid boom length for %d of %d state(s).",
+					badStates.size(), ps.getPath().size()));
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns the path indices of any states with invalid booms.
+	 * 
+	 * @return the path indices of any states with invalid booms.
+	 */
+	public List<Integer> getInvalidBoomStates() {
+		List<Integer> badStates = new ArrayList<Integer>();
 		List<ASVConfig> path = ps.getPath();
 		for (int i = 0; i < path.size(); i++) {
 			if (!hasValidBoomLengths(path.get(i))) {
-				badStates.put(i, path.get(i));
+				badStates.add(i);
 			}
 		}
-		String message = String.format("Invalid boom length for %d state(s).",
-				badStates.size());
-		Assert.assertEquals(message, new TreeMap<Integer, ASVConfig>(),
-				badStates);
+		return badStates;
 	}
 
 	/**
@@ -205,9 +223,9 @@ public class Tester {
 			Point2D p0 = points.get(i - 1);
 			Point2D p1 = points.get(i);
 			double boomLength = p0.distance(p1);
-			if (boomLength < MIN_BOOM_LENGTH - MAX_COORD_ERROR) {
+			if (boomLength < MIN_BOOM_LENGTH - maxError) {
 				return false;
-			} else if (boomLength > MAX_BOOM_LENGTH + MAX_COORD_ERROR) {
+			} else if (boomLength > MAX_BOOM_LENGTH + maxError) {
 				return false;
 			}
 		}
@@ -218,19 +236,34 @@ public class Tester {
 	 * Checks that each configuration in the path is convex (and hence also
 	 * non-self-intersecting).
 	 */
-	@Test
-	public void testConvexity() {
-		Map<Integer, ASVConfig> badStates = new TreeMap<Integer, ASVConfig>();
+	public boolean testConvexity(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Convexity", testNo));
+		List<Integer> badStates = getNonConvexStates();
+		if (!badStates.isEmpty()) {
+			System.out.println(String.format(
+					"FAILED: %d of %d state(s) are not convex.",
+					badStates.size(), ps.getPath().size()));
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns the path indices of any non-convex states.
+	 * 
+	 * @return the path indices of any non-convex states.
+	 */
+	public List<Integer> getNonConvexStates() {
+		List<Integer> badStates = new ArrayList<Integer>();
 		List<ASVConfig> path = ps.getPath();
 		for (int i = 0; i < path.size(); i++) {
 			if (!isConvex(path.get(i))) {
-				badStates.put(i, path.get(i));
+				badStates.add(i);
 			}
 		}
-		String message = String.format("%d state(s) not convex.",
-				badStates.size());
-		Assert.assertEquals(message, new TreeMap<Integer, ASVConfig>(),
-				badStates);
+		return badStates;
 	}
 
 	/**
@@ -271,19 +304,34 @@ public class Tester {
 	/**
 	 * Checks whether each configuration has sufficient internal area.
 	 */
-	@Test
-	public void testAreas() {
-		Map<Integer, ASVConfig> badStates = new TreeMap<Integer, ASVConfig>();
+	public boolean testAreas(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Areas", testNo));
+		List<Integer> badStates = getInvalidAreaStates();
+		if (!badStates.isEmpty()) {
+			System.out.println(String.format(
+					"FAILED: %d of %d state(s) have insufficient area.",
+					badStates.size(), ps.getPath().size()));
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns the path indices of any states with insufficient area.
+	 * 
+	 * @return the path indices of any states with insufficient area.
+	 */
+	public List<Integer> getInvalidAreaStates() {
 		List<ASVConfig> path = ps.getPath();
+		List<Integer> badStates = new ArrayList<Integer>();
 		for (int i = 0; i < path.size(); i++) {
 			if (!hasEnoughArea(path.get(i))) {
-				badStates.put(i, path.get(i));
+				badStates.add(i);
 			}
 		}
-		String message = String.format("%d state(s) with insufficient area.",
-				badStates.size());
-		Assert.assertEquals(message, new TreeMap<Integer, ASVConfig>(),
-				badStates);
+		return badStates;
 	}
 
 	/**
@@ -303,48 +351,78 @@ public class Tester {
 					* (points.get(i + 1).getY() - points.get(i - 1).getY());
 		}
 		double area = Math.abs(total) / 2;
-		return (area >= getMinimumArea(s.getASVCount()) - MAX_AREA_ERROR);
+		return (area >= getMinimumArea(s.getASVCount()) - maxError);
 	}
 
 	/**
 	 * Checks that each configuration fits within the workspace bounds.
 	 */
-	@Test
-	public void testBounds() {
-		Map<Integer, ASVConfig> badStates = new TreeMap<Integer, ASVConfig>();
+	public boolean testBounds(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Bounds", testNo));
+		List<Integer> badStates = getOutOfBoundsStates();
+		if (!badStates.isEmpty()) {
+			System.out
+					.println(String
+							.format("FAILED: %d of %d state(s) go out of the workspace bounds.",
+									badStates.size(), ps.getPath().size()));
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns the path indices of any states that are out of bounds.
+	 * 
+	 * @return the path indices of any states that are out of bounds.
+	 */
+	public List<Integer> getOutOfBoundsStates() {
 		List<ASVConfig> path = ps.getPath();
+		List<Integer> badStates = new ArrayList<Integer>();
 		for (int i = 0; i < path.size(); i++) {
-			if (!(path.get(i)).fitsBounds(LENIENT_BOUNDS)) {
-				badStates.put(i, path.get(i));
+			if (!(path.get(i)).fitsBounds(lenientBounds)) {
+				badStates.add(i);
 			}
 		}
-		String message = String
-				.format("%d state(s) go out of the workspace bounds.",
-						badStates.size());
-		Assert.assertEquals(message, new TreeMap<Integer, ASVConfig>(),
-				badStates);
+		return badStates;
 	}
 
 	/**
 	 * Checks that each configuration does not collide with any of the
 	 * obstacles.
 	 */
-	@Test
-	public void testCollisions() {
-		Map<Integer, ASVConfig> badStates = new TreeMap<Integer, ASVConfig>();
+	public boolean testCollisions(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Collisions", testNo));
+		List<Integer> badStates = getCollidingStates();
+		if (!badStates.isEmpty()) {
+			System.out.println(String.format(
+					"FAILED: %d of %d state(s) collide with obstacles.",
+					badStates.size(), ps.getPath().size()));
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Returns the path indices of any states that collide with obstacles.
+	 * 
+	 * @return the path indices of any states that collide with obstacles.
+	 */
+	public List<Integer> getCollidingStates() {
 		List<ASVConfig> path = ps.getPath();
+		List<Integer> badStates = new ArrayList<Integer>();
 		for (int i = 0; i < path.size(); i++) {
 			for (Obstacle o : ps.getObstacles()) {
 				if (hasCollision(path.get(i), o)) {
-					badStates.put(i, path.get(i));
+					badStates.add(i);
 					break;
 				}
 			}
 		}
-		String message = String.format("%d state(s) collide with obstacles.",
-				badStates.size());
-		Assert.assertEquals(message, new TreeMap<Integer, ASVConfig>(),
-				badStates);
+		return badStates;
 	}
 
 	/**
@@ -357,7 +435,7 @@ public class Tester {
 	 * @return whether the given configuration collides with the given obstacle.
 	 */
 	public boolean hasCollision(ASVConfig s, Obstacle o) {
-		Rectangle2D lenientRect = grow(o.getRect(), -MAX_COORD_ERROR);
+		Rectangle2D lenientRect = grow(o.getRect(), -maxError);
 		List<Point2D> points = s.getASVPositions();
 		for (int i = 1; i < points.size(); i++) {
 			if (new Line2D.Double(points.get(i - 1), points.get(i))
@@ -366,5 +444,119 @@ public class Tester {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Checks that the total cost of the solution is correctly calculated.
+	 */
+	public boolean testTotalCost(int testNo, boolean verbose) {
+		System.out.println(String.format("Test #%d: Solution cost", testNo));
+		double cost = ps.getSolutionCost();
+		double actualCost = ps.calculateTotalCost();
+		if (Math.abs(cost - actualCost) > maxError) {
+			System.out.println(String.format(
+					"FAILED: Incorrect solution cost; was %f but should be %f",
+					cost, actualCost));
+			return false;
+		} else {
+			System.out.println("Passed.");
+			return true;
+		}
+	}
+
+	/**
+	 * Runs a specific test based on its name.
+	 */
+	public boolean testByName(String testName, int testNo, boolean verbose) {
+		switch (testName.toLowerCase()) {
+		case "initial":
+			return testInitialFirst(testNo, verbose);
+		case "goal":
+			return testGoalLast(testNo, verbose);
+		case "steps":
+			return testValidSteps(testNo, verbose);
+		case "booms":
+			return testBoomLengths(testNo, verbose);
+		case "convexity":
+			return testConvexity(testNo, verbose);
+		case "areas":
+			return testAreas(testNo, verbose);
+		case "bounds":
+			return testBounds(testNo, verbose);
+		case "collisions":
+			return testCollisions(testNo, verbose);
+		case "cost":
+			return testTotalCost(testNo, verbose);
+		default:
+			return true;
+		}
+	}
+
+	/**
+	 * Runs all 9 test cases from the command line.
+	 * 
+	 * @param args
+	 *            the command line arguments.
+	 */
+	public static void main(String[] args) {
+		double maxError = DEFAULT_MAX_ERROR;
+		boolean verbose = false;
+		String problemPath = null;
+		String solutionPath = null;
+		for (int i = 0; i < args.length; i++) {
+			String arg = args[i].trim();
+			if (arg.equals("-e")) {
+				i++;
+				if (i < args.length) {
+					maxError = Double.valueOf(args[i]);
+				}
+			} else if (arg.equals("-v")) {
+				verbose = true;
+			} else {
+				if (problemPath == null) {
+					problemPath = arg;
+				} else {
+					solutionPath = arg;
+				}
+			}
+		}
+		if (problemPath == null) {
+			System.out
+					.println("Usage: tester [-e maxError] [-v] problem-file [solution-file]");
+			return;
+		}
+		System.out.println("Test #0: Loading files");
+		Tester tester = new Tester(maxError);
+		try {
+			tester.ps.loadProblem(problemPath);
+		} catch (IOException e1) {
+			System.out.println("FAILED: Invalid problem file");
+			return;
+		}
+
+		if (solutionPath != null) {
+			try {
+				tester.ps.loadSolution(solutionPath);
+			} catch (IOException e1) {
+				System.out.println("FAILED: Invalid solution file");
+				return;
+			}
+		} else {
+			tester.ps.assumeDirectSolution();
+		}
+		System.out.println("Passed.");
+
+		List<String> testsToRun = new ArrayList<String>();
+		if (solutionPath != null) {
+			testsToRun.addAll(Arrays.asList(new String[] { "initial", "goal",
+					"steps", "cost" }));
+		}
+		testsToRun.addAll(Arrays.asList(new String[] { "booms", "convexity",
+				"areas", "bounds", "collisions" }));
+		int testNo = 1;
+		for (String name : testsToRun) {
+			tester.testByName(name, testNo, verbose);
+			testNo++;
+		}
 	}
 }

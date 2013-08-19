@@ -72,7 +72,7 @@ public class ASVConfig {
 	 *            the other state to compare.
 	 * @return the maximum straight-line distance for any ASV.
 	 */
-	public double getMaxDistance(ASVConfig otherState) {
+	public double maxDistance(ASVConfig otherState) {
 		if (this.getASVCount() != otherState.getASVCount()) {
 			return -1;
 		}
@@ -85,6 +85,26 @@ public class ASVConfig {
 			}
 		}
 		return maxDistance;
+	}
+
+	/**
+	 * Returns the total straight-line distance over all the ASVs between this
+	 * state and the other state, or -1 if the ASV counts don't match.
+	 * 
+	 * @param otherState
+	 *            the other state to compare.
+	 * @return the total straight-line distance over all ASVs.
+	 */
+	public double totalDistance(ASVConfig otherState) {
+		if (this.getASVCount() != otherState.getASVCount()) {
+			return -1;
+		}
+		double totalDistance = 0;
+		for (int i = 0; i < this.getASVCount(); i++) {
+			totalDistance += this.getPosition(i).distance(
+					otherState.getPosition(i));
+		}
+		return totalDistance;
 	}
 
 	/**

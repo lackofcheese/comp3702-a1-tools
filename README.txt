@@ -3,11 +3,7 @@ A visualiser and tester for COMP3702 Assignment 1, by Dimitri Klimenko (tutor).
 
 (1) Commands and arguments
 The runnable files and their arguments are:
-Script to run tests:
-    runtests [problem-file] [solution-file]
-Test class (must be run with JUnit):
-    tester.Tester
-Visualiser:
+    tester.Tester [-e maxError] [-v] problem-file [solution-file]
     visualiser.Visualiser [problem-file] [solution-file]
 
 
@@ -16,33 +12,36 @@ To run it, simply run visualiser.jar with Java 7 (double-clicking should work
 if Java is installed properly). If this doesn't work or you want to run it
 with a different version, I recommend using Eclipse - simply add the contents
 of a1-tools.zip to a new project.
-Alternatively, see the manual compilation instructions in section (3).
+Alternatively, see the manual compilation instructions in section (4).
 
 You can also run it from the command line with optional
 command-line arguments:
     java -jar visualiser.jar [problem-file] [solution-file]
-
-For example, using the test cases provided here:
-    java -jar visualiser.jar problem.txt solution.txt
 
 Note that these commands may require you to use full path to java.exe,
 as per section (5).
 
 
 (3) Running the Tester
-The recommended way to run the tests is by doing so using Eclipse.
-Simply add the contents of a1-tools.zip to a new project, and 
-then make sure to add JUnit 4 to the project's build path (right click on
-the project, go to Build Path->Add Libraries, and then choose JUnit 4).
+To run the tester in Eclipse, simply add the contents of a1-tools.zip
+to a new project, and then create a new Run Configuration for tester.Tester;
+then add the command line arguments for Tester as per the above specifications.
 
-To select which files to run the tests on, edit the values of the variables 
-problemPath and solutionPath inside the Tester class.
+The [-e maxError] argument allows you to specify the maximum allowable
+floating point error; the default value is 1e-5.
 
-Alternatively, compile the source code as per section (4), and you can use
-either runtests.bat or runtests.sh to run the tests; the usage is:
-    runtests [problem-file] [solution-file]
-Note that you may need to update your system path or change the commands in
-the runtests script as per (5).
+The [-v] argument gives more detailed output (not yet implemented).
+
+Specifying a problem file without a solution file will simply verify that the
+initial and goal states are valid; if a solution file is also given, all
+of the requirements of the assignment will be tested to ensure the solution
+is valid.
+
+For example, the example I/O from the assignment specifications can 
+be tested using the following command-line arguments:
+     example_input.txt example_output.txt
+    
+Alternatively, see the manual compilation instructions in section (4).
 
 
 (4) Manual Compilation
@@ -53,12 +52,11 @@ following:
 3) From within that folder, run the command
     ant
 
-To run the visualiser, you may now use the command
-    java -cp bin visualiser/Visualiser
-As with the JAR, you can add command-line arguments, e.g.
-    java -cp bin visualiser/Visualiser problem.txt solution.txt
+The following commands should now work for running the visualiser and tester:
+    java -cp bin visualiser/Visualiser [problem-file] [solution-file]
+    java -cp bin tester.Tester [-e maxError] [-v] problem-file [solution-file]
 
-The commands above may require full paths; see section (5).
+The commands above may require full paths to Java; see section (5).
 
 
 (5) The command line and the system path
@@ -68,6 +66,3 @@ system path; if not, you'll have to specify a full path instead of just
 "C:\Program Files (x86)\Java\jdk1.7.0_25\bin\java.exe"
 or
 /usr/java/jdk1.7.0_25/bin/java
-
-If you're using the .bat or .sh scripts you will need to replace the commands
-"java" and "javac" with their full paths.

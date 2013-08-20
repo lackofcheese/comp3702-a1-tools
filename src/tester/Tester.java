@@ -317,10 +317,10 @@ public class Tester {
 			double dx1 = p2.getX() - p1.getX();
 			double dy1 = p2.getY() - p1.getY();
 			double zcp = dx0 * dy1 - dy0 * dx1;
-			if (zcp == 0 && dx0*dx1 + dy0*dy1 < 0) {
+			if (zcp == 0 && dx0 * dx1 + dy0 * dy1 < 0) {
 				return false;
 			}
-			
+
 			double sgn;
 			if (zcp < -maxError) {
 				sgn = -1;
@@ -329,7 +329,7 @@ public class Tester {
 			} else {
 				sgn = 0;
 			}
-			
+
 			if (sgn * required_sign < 0) {
 				return false;
 			} else if (sgn != 0) {

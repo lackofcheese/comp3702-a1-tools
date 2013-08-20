@@ -307,7 +307,7 @@ public class Tester {
 		points.add(points.get(0));
 		points.add(points.get(1));
 
-		double sgn = 0;
+		double required_sign = 0;
 		for (int i = 2; i < points.size(); i++) {
 			Point2D p0 = points.get(i - 2);
 			Point2D p1 = points.get(i - 1);
@@ -317,14 +317,23 @@ public class Tester {
 			double dx1 = p2.getX() - p1.getX();
 			double dy1 = p2.getY() - p1.getY();
 			double zcp = dx0 * dy1 - dy0 * dx1;
-			if (zcp * sgn < 0) {
+			if (zcp == 0 && dx0*dx1 + dy0*dy1 < 0) {
 				return false;
-			} else if (zcp > 0) {
-				sgn = 1;
-			} else if (zcp < 0) {
+			}
+			
+			double sgn;
+			if (zcp < -maxError) {
 				sgn = -1;
-			} else if (dx0 * dx1 + dy0 * dy1 < 0) {
+			} else if (zcp > maxError) {
+				sgn = 1;
+			} else {
+				sgn = 0;
+			}
+			
+			if (sgn * required_sign < 0) {
 				return false;
+			} else if (sgn != 0) {
+				required_sign = sgn;
 			}
 		}
 		return true;

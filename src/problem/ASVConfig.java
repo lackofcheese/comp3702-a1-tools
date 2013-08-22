@@ -5,7 +5,6 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 /**
  * Represents a configuration of the ASVs. This class doesn't do any validity
@@ -108,25 +107,6 @@ public class ASVConfig {
 					otherState.getPosition(i));
 		}
 		return totalDistance;
-	}
-
-	/**
-	 * Returns whether this configuration fits wholly within the given
-	 * rectangle.
-	 * 
-	 * @param bounds
-	 *            the rectangle to test against.
-	 * @return whether this configuration fits wholly within the given
-	 *         rectangle.
-	 */
-	public boolean fitsBounds(Rectangle2D bounds) {
-		for (Point2D p : asvPositions) {
-			if (!bounds.contains(p)) {
-				return false;
-			}
-
-		}
-		return true;
 	}
 
 	/**

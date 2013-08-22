@@ -185,14 +185,14 @@ public class Tester {
 	/**
 	 * Returns whether the step from s0 to s1 is a valid primitive step.
 	 * 
-	 * @param s0
+	 * @param cfg0
 	 *            A configuration.
-	 * @param s1
+	 * @param cfg1
 	 *            Another configuration.
 	 * @return whether the step from s0 to s1 is a valid primitive step.
 	 */
-	public boolean isValidStep(ASVConfig s0, ASVConfig s1) {
-		return (s0.maxDistance(s1) <= MAX_STEP + maxError);
+	public boolean isValidStep(ASVConfig cfg0, ASVConfig cfg1) {
+		return (cfg0.maxDistance(cfg1) <= MAX_STEP + maxError);
 	}
 
 	/**
@@ -238,12 +238,12 @@ public class Tester {
 	/**
 	 * Returns whether the booms in the given configuration have valid lengths.
 	 * 
-	 * @param s
+	 * @param cfg
 	 *            the configuration to test.
 	 * @return whether the booms in the given configuration have valid lengths.
 	 */
-	public boolean hasValidBoomLengths(ASVConfig s) {
-		List<Point2D> points = s.getASVPositions();
+	public boolean hasValidBoomLengths(ASVConfig cfg) {
+		List<Point2D> points = cfg.getASVPositions();
 		for (int i = 1; i < points.size(); i++) {
 			Point2D p0 = points.get(i - 1);
 			Point2D p1 = points.get(i);
@@ -298,12 +298,12 @@ public class Tester {
 	/**
 	 * Returns whether the given configuration is convex.
 	 * 
-	 * @param s
+	 * @param cfg
 	 *            the configuration to test.
 	 * @return whether the given configuration is convex.
 	 */
-	public boolean isConvex(ASVConfig s) {
-		List<Point2D> points = s.getASVPositions();
+	public boolean isConvex(ASVConfig cfg) {
+		List<Point2D> points = cfg.getASVPositions();
 		points.add(points.get(0));
 		points.add(points.get(1));
 
@@ -379,13 +379,13 @@ public class Tester {
 	/**
 	 * Returns whether the given configuration has sufficient area.
 	 * 
-	 * @param s
+	 * @param cfg
 	 *            the configuration to test.
 	 * @return whether the given configuration has sufficient area.
 	 */
-	public boolean hasEnoughArea(ASVConfig s) {
+	public boolean hasEnoughArea(ASVConfig cfg) {
 		double total = 0;
-		List<Point2D> points = s.getASVPositions();
+		List<Point2D> points = cfg.getASVPositions();
 		points.add(points.get(0));
 		points.add(points.get(1));
 		for (int i = 1; i < points.size() - 1; i++) {
@@ -393,7 +393,7 @@ public class Tester {
 					* (points.get(i + 1).getY() - points.get(i - 1).getY());
 		}
 		double area = Math.abs(total) / 2;
-		return (area >= getMinimumArea(s.getASVCount()) - maxError);
+		return (area >= getMinimumArea(cfg.getASVCount()) - maxError);
 	}
 
 	/**
@@ -426,11 +426,27 @@ public class Tester {
 		List<ASVConfig> path = ps.getPath();
 		List<Integer> badStates = new ArrayList<Integer>();
 		for (int i = 0; i < path.size(); i++) {
-			if (!(path.get(i)).fitsBounds(lenientBounds)) {
+			if (!fitsBounds(path.get(i))) {
 				badStates.add(i);
 			}
 		}
 		return badStates;
+	}
+
+	/**
+	 * Returns whether the given configuration fits wholly within the bounds.
+	 * 
+	 * @param cfg
+	 *            the configuration to test.
+	 * @return whether the given configuration fits wholly within the bounds.
+	 */
+	public boolean fitsBounds(ASVConfig cfg) {
+		for (Point2D p : cfg.getASVPositions()) {
+			if (!lenientBounds.contains(p)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -464,28 +480,45 @@ public class Tester {
 		List<ASVConfig> path = ps.getPath();
 		List<Integer> badStates = new ArrayList<Integer>();
 		for (int i = 0; i < path.size(); i++) {
-			for (Obstacle o : ps.getObstacles()) {
-				if (hasCollision(path.get(i), o)) {
-					badStates.add(i);
-					break;
-				}
+			if (hasCollision(path.get(i), ps.getObstacles())) {
+				badStates.add(i);
 			}
 		}
 		return badStates;
 	}
 
 	/**
+	 * Returns whether the given config collides with any of the given
+	 * obstacles.
+	 * 
+	 * @param cfg
+	 *            the configuration to test.
+	 * @param obstacles
+	 *            the obstacles to test against.
+	 * @return whether the given config collides with any of the given
+	 *         obstacles.
+	 */
+	public boolean hasCollision(ASVConfig cfg, List<Obstacle> obstacles) {
+		for (Obstacle o : obstacles) {
+			if (hasCollision(cfg, o)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Returns whether the given config collides with the given obstacle.
 	 * 
-	 * @param s
+	 * @param cfg
 	 *            the configuration to test.
 	 * @param o
 	 *            the obstacle to test against.
 	 * @return whether the given config collides with the given obstacle.
 	 */
-	public boolean hasCollision(ASVConfig s, Obstacle o) {
+	public boolean hasCollision(ASVConfig cfg, Obstacle o) {
 		Rectangle2D lenientRect = grow(o.getRect(), -maxError);
-		List<Point2D> points = s.getASVPositions();
+		List<Point2D> points = cfg.getASVPositions();
 		for (int i = 1; i < points.size(); i++) {
 			if (new Line2D.Double(points.get(i - 1), points.get(i))
 					.intersects(lenientRect)) {

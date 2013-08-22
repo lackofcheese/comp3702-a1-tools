@@ -4,6 +4,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * This class represents one of the rectangular obstacles in Assignment 1.
@@ -39,18 +40,19 @@ public class Obstacle {
 	 * @param str
 	 */
 	public Obstacle(String str) {
-		String[] tokens = str.trim().split("\\s+");
+		Scanner s = new Scanner(str);
 		List<Double> xs = new ArrayList<Double>();
 		List<Double> ys = new ArrayList<Double>();
 		for (int i = 0; i < 4; i++) {
-			xs.add(Double.valueOf(tokens[i * 2]));
-			ys.add(Double.valueOf(tokens[i * 2 + 1]));
+			xs.add(s.nextDouble());
+			ys.add(s.nextDouble());
 		}
 		double xMin = Collections.min(xs);
 		double xMax = Collections.max(xs);
 		double yMin = Collections.min(ys);
 		double yMax = Collections.max(ys);
 		this.rect = new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
+		s.close();
 	}
 
 	/**

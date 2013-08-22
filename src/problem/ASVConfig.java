@@ -1,7 +1,9 @@
 package problem;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -38,12 +40,13 @@ public class ASVConfig {
 	 * @param str
 	 *            the String containing the coordinates.
 	 */
-	public ASVConfig(int asvCount, String str) {
-		String[] tokens = str.trim().split("\\s+");
+	public ASVConfig(int asvCount, String str) throws InputMismatchException {
+		Scanner s = new Scanner(str);
 		for (int i = 0; i < asvCount; i++) {
-			asvPositions.add(new Point2D.Double(Double.valueOf(tokens[i * 2]),
-					Double.valueOf(tokens[i * 2 + 1])));
+			asvPositions
+					.add(new Point2D.Double(s.nextDouble(), s.nextDouble()));
 		}
+		s.close();
 	}
 
 	/**

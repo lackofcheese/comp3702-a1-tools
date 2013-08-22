@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  * This class represents the specifications of a given problem and solution;
@@ -52,38 +55,48 @@ public class ProblemSpec {
 		BufferedReader input = new BufferedReader(new FileReader(filename));
 		String line;
 		int lineNo = 0;
+		Scanner s;
 		try {
-			line = input.readLine().trim();
+			line = input.readLine();
 			lineNo++;
-			asvCount = Integer.valueOf(line);
-			line = input.readLine().trim();
+			s = new Scanner(line);
+			asvCount = s.nextInt();
+			s.close();
+
+			line = input.readLine();
 			lineNo++;
 			initialState = new ASVConfig(asvCount, line);
-			line = input.readLine().trim();
+
+			line = input.readLine();
 			lineNo++;
 			goalState = new ASVConfig(asvCount, line);
-			line = input.readLine().trim();
+
+			line = input.readLine();
 			lineNo++;
-			int numObstacles = Integer.valueOf(line);
+			s = new Scanner(line);
+			int numObstacles = s.nextInt();
+			s.close();
+
 			obstacles = new ArrayList<Obstacle>();
 			for (int i = 0; i < numObstacles; i++) {
-				line = input.readLine().trim();
+				line = input.readLine();
 				lineNo++;
 				obstacles.add(new Obstacle(line));
 			}
-			input.close();
+
 			problemLoaded = true;
-		} catch (NumberFormatException e) {
+		} catch (InputMismatchException e) {
 			throw new IOException(String.format(
-					"Invalid number format on line %d. %s", lineNo,
+					"Invalid number format on line %d: %s", lineNo,
 					e.getMessage()));
-		} catch (IndexOutOfBoundsException e) {
-			throw new IOException(String.format(
-					"Not enough tokens on line %d - %d required", lineNo,
-					asvCount * 2));
+		} catch (NoSuchElementException e) {
+			throw new IOException(String.format("Not enough tokens on line %d",
+					lineNo));
 		} catch (NullPointerException e) {
 			throw new IOException(String.format(
 					"Line %d expected, but file ended.", lineNo));
+		} finally {
+			input.close();
 		}
 	}
 
@@ -104,32 +117,34 @@ public class ProblemSpec {
 		BufferedReader input = new BufferedReader(new FileReader(filename));
 		String line;
 		int lineNo = 0;
+		Scanner s;
 		try {
-			line = input.readLine().trim();
+			line = input.readLine();
 			lineNo++;
-			String[] tokens = line.split("\\s+");
-			int pathLength = Integer.valueOf(tokens[0]);
-			solutionCost = Double.valueOf(tokens[1]);
+			s = new Scanner(line);
+			int pathLength = s.nextInt();
+			solutionCost = s.nextDouble();
+			s.close();
+
 			path = new ArrayList<ASVConfig>();
 			for (int i = 0; i < pathLength; i++) {
-				line = input.readLine().trim();
+				line = input.readLine();
 				lineNo++;
-				ASVConfig s = new ASVConfig(asvCount, line);
-				path.add(s);
+				path.add(new ASVConfig(asvCount, line));
 			}
-			input.close();
 			solutionLoaded = true;
-		} catch (NumberFormatException e) {
+		} catch (InputMismatchException e) {
 			throw new IOException(String.format(
-					"Invalid number format on line %d. %s", lineNo,
+					"Invalid number format on line %d: %s", lineNo,
 					e.getMessage()));
-		} catch (IndexOutOfBoundsException e) {
-			throw new IOException(String.format(
-					"Not enough tokens on line %d - %d required", lineNo,
-					asvCount * 2));
+		} catch (NoSuchElementException e) {
+			throw new IOException(String.format("Not enough tokens on line %d",
+					lineNo));
 		} catch (NullPointerException e) {
 			throw new IOException(String.format(
 					"Line %d expected, but file ended.", lineNo));
+		} finally {
+			input.close();
 		}
 	}
 

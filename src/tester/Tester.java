@@ -168,7 +168,7 @@ public class Tester {
 	 * 
 	 * @return the preceding path indices of any invalid steps.
 	 */
-	private List<Integer> getInvalidSteps() {
+	public List<Integer> getInvalidSteps() {
 		List<Integer> badSteps = new ArrayList<Integer>();
 		List<ASVConfig> path = ps.getPath();
 		ASVConfig state = path.get(0);
@@ -191,7 +191,7 @@ public class Tester {
 	 *            Another configuration.
 	 * @return whether the step from s0 to s1 is a valid primitive step.
 	 */
-	private boolean isValidStep(ASVConfig s0, ASVConfig s1) {
+	public boolean isValidStep(ASVConfig s0, ASVConfig s1) {
 		return (s0.maxDistance(s1) <= MAX_STEP + maxError);
 	}
 
@@ -242,7 +242,7 @@ public class Tester {
 	 *            the configuration to test.
 	 * @return whether the booms in the given configuration have valid lengths.
 	 */
-	private boolean hasValidBoomLengths(ASVConfig s) {
+	public boolean hasValidBoomLengths(ASVConfig s) {
 		List<Point2D> points = s.getASVPositions();
 		for (int i = 1; i < points.size(); i++) {
 			Point2D p0 = points.get(i - 1);
@@ -302,7 +302,7 @@ public class Tester {
 	 *            the configuration to test.
 	 * @return whether the given configuration is convex.
 	 */
-	private boolean isConvex(ASVConfig s) {
+	public boolean isConvex(ASVConfig s) {
 		List<Point2D> points = s.getASVPositions();
 		points.add(points.get(0));
 		points.add(points.get(1));
@@ -383,7 +383,7 @@ public class Tester {
 	 *            the configuration to test.
 	 * @return whether the given configuration has sufficient area.
 	 */
-	private boolean hasEnoughArea(ASVConfig s) {
+	public boolean hasEnoughArea(ASVConfig s) {
 		double total = 0;
 		List<Point2D> points = s.getASVPositions();
 		points.add(points.get(0));

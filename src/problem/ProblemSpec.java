@@ -2,6 +2,7 @@ package problem;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -38,13 +39,13 @@ public class ProblemSpec {
 	/** The path taken in the solution */
 	private List<ASVConfig> path;
 	/** The cost of the solution */
-	private double solutionCost;
+	private double solutionCost = 0;
 
 	/**
 	 * Loads a problem from a problem text file.
 	 * 
 	 * @param filename
-	 *            the text file to load.
+	 *            the path of the text file to load.
 	 * @throws IOException
 	 *             if the text file doesn't exist or doesn't meet the assignment
 	 *             specifications.
@@ -104,7 +105,7 @@ public class ProblemSpec {
 	 * Loads a solution from a solution text file.
 	 * 
 	 * @param filename
-	 *            the text file to load.
+	 *            the path of the text file to load.
 	 * @throws IOException
 	 *             if the text file doesn't exist or doesn't meet the assignment
 	 *             specifications.
@@ -149,6 +150,28 @@ public class ProblemSpec {
 	}
 
 	/**
+	 * Saves the current solution to a solution text file.
+	 * 
+	 * @param filename
+	 *            the path of the text file to save to.
+	 * @throws IOException
+	 *             if the text file doesn't exist or doesn't meet the assignment
+	 *             specifications.
+	 */
+	public void saveSolution(String filename) throws IOException {
+		if (!problemLoaded || !solutionLoaded) {
+			return;
+		}
+		String ls = System.getProperty("line.separator");
+		FileWriter output = new FileWriter(filename);
+		output.write(path.size() + " " + solutionCost + ls);
+		for (ASVConfig cfg : path) {
+			output.write(cfg + ls);
+		}
+		output.close();
+	}
+
+	/**
 	 * Assumes that a path can be taken directly from the initial configuration
 	 * to the goal.
 	 */
@@ -159,8 +182,8 @@ public class ProblemSpec {
 		path = new ArrayList<ASVConfig>();
 		path.add(initialState);
 		path.add(goalState);
-		solutionLoaded = true;
 		solutionCost = calculateTotalCost();
+		solutionLoaded = true;
 	}
 
 	/**
@@ -207,21 +230,36 @@ public class ProblemSpec {
 	}
 
 	/**
-	 * Returns the solution path.
-	 * 
-	 * @return the solution path.
-	 */
-	public List<ASVConfig> getPath() {
-		return new ArrayList<ASVConfig>(path);
-	}
-
-	/**
 	 * Returns the list of obstacles.
 	 * 
 	 * @return the list of obstacles.
 	 */
 	public List<Obstacle> getObstacles() {
 		return new ArrayList<Obstacle>(obstacles);
+	}
+
+	/**
+	 * Sets the path.
+	 * 
+	 * @param path
+	 *            the new path.
+	 */
+	public void setPath(List<ASVConfig> path) {
+		if (!problemLoaded) {
+			return;
+		}
+		this.path = new ArrayList<ASVConfig>(path);
+		solutionCost = calculateTotalCost();
+		solutionLoaded = true;
+	}
+
+	/**
+	 * Returns the solution path.
+	 * 
+	 * @return the solution path.
+	 */
+	public List<ASVConfig> getPath() {
+		return new ArrayList<ASVConfig>(path);
 	}
 
 	/**

@@ -49,6 +49,16 @@ public class ASVConfig {
 	}
 
 	/**
+	 * Copy constructor.
+	 * 
+	 * @param cfg
+	 *            the configuration to copy.
+	 */
+	public ASVConfig(ASVConfig cfg) {
+		asvPositions = cfg.getASVPositions();
+	}
+
+	/**
 	 * Returns a space-separated string of the ASV coordinates.
 	 * 
 	 * @return a space-separated string of the ASV coordinates.

@@ -8,6 +8,7 @@ import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.List;
@@ -151,6 +152,12 @@ public class VisualisationPanel extends JComponent {
 		}
 		path.transform(transform);
 		g2.draw(path);
+		if (!animating && !displayingSolution) {
+			p = transform.transform(points.get(0), null);
+			g2.setColor(Color.RED);
+			g2.draw(new Ellipse2D.Double(p.getX() - 5, p.getY() - 5, 10, 10));
+
+		}
 	}
 
 	public void setSamplingPeriod(int samplingPeriod) {

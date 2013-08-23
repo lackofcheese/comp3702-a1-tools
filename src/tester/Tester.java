@@ -324,7 +324,7 @@ public class Tester {
 		points.add(points.get(0));
 		points.add(points.get(1));
 
-		double required_sign = 0;
+		double requiredSign = 0;
 		double totalTurned = 0;
 		Point2D p0 = points.get(0);
 		Point2D p1 = points.get(1);
@@ -339,24 +339,24 @@ public class Tester {
 				return false;
 			}
 
-			totalTurned += turningAngle;
+			totalTurned += Math.abs(turningAngle);
 			if (totalTurned > 2 * Math.PI + maxError) {
 				return false;
 			}
 
-			double sgn;
+			double turnSign;
 			if (turningAngle < -maxError) {
-				sgn = -1;
+				turnSign = -1;
 			} else if (turningAngle > maxError) {
-				sgn = 1;
+				turnSign = 1;
 			} else {
-				sgn = 0;
+				turnSign = 0;
 			}
 
-			if (sgn * required_sign < 0) {
+			if (turnSign * requiredSign < 0) {
 				return false;
-			} else if (sgn != 0) {
-				required_sign = sgn;
+			} else if (turnSign != 0) {
+				requiredSign = turnSign;
 			}
 
 			p0 = p1;

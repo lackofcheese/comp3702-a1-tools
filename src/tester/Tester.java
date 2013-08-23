@@ -296,6 +296,23 @@ public class Tester {
 	}
 
 	/**
+	 * Normalises an angle to the range (-pi, pi]
+	 * 
+	 * @param angle
+	 *            the angle to normalise.
+	 * @return the normalised angle.
+	 */
+	public double normaliseAngle(double angle) {
+		while (angle <= -Math.PI) {
+			angle += 2 * Math.PI;
+		}
+		while (angle > Math.PI) {
+			angle -= 2 * Math.PI;
+		}
+		return angle;
+	}
+
+	/**
 	 * Returns whether the given configuration is convex.
 	 * 
 	 * @param cfg
@@ -308,23 +325,29 @@ public class Tester {
 		points.add(points.get(1));
 
 		double required_sign = 0;
+		double totalTurned = 0;
+		Point2D p0 = points.get(0);
+		Point2D p1 = points.get(1);
+		double angle = Math.atan2(p1.getY() - p0.getY(), p1.getX() - p0.getX());
 		for (int i = 2; i < points.size(); i++) {
-			Point2D p0 = points.get(i - 2);
-			Point2D p1 = points.get(i - 1);
 			Point2D p2 = points.get(i);
-			double dx0 = p1.getX() - p0.getX();
-			double dy0 = p1.getY() - p0.getY();
-			double dx1 = p2.getX() - p1.getX();
-			double dy1 = p2.getY() - p1.getY();
-			double zcp = dx0 * dy1 - dy0 * dx1;
-			if (zcp == 0 && dx0 * dx1 + dy0 * dy1 < 0) {
+			double nextAngle = Math.atan2(p2.getY() - p1.getY(),
+					p2.getX() - p1.getX());
+			double turningAngle = normaliseAngle(nextAngle - angle);
+
+			if (turningAngle == Math.PI) {
+				return false;
+			}
+
+			totalTurned += turningAngle;
+			if (totalTurned > 2 * Math.PI + maxError) {
 				return false;
 			}
 
 			double sgn;
-			if (zcp < -maxError) {
+			if (turningAngle < -maxError) {
 				sgn = -1;
-			} else if (zcp > maxError) {
+			} else if (turningAngle > maxError) {
 				sgn = 1;
 			} else {
 				sgn = 0;
@@ -335,6 +358,10 @@ public class Tester {
 			} else if (sgn != 0) {
 				required_sign = sgn;
 			}
+
+			p0 = p1;
+			p1 = p2;
+			angle = nextAngle;
 		}
 		return true;
 	}

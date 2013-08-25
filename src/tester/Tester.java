@@ -340,7 +340,7 @@ public class Tester {
 			}
 
 			totalTurned += Math.abs(turningAngle);
-			if (totalTurned > 2 * Math.PI + maxError) {
+			if (totalTurned > 3 * Math.PI) {
 				return false;
 			}
 

@@ -54,7 +54,7 @@ following:
     ant
 
 The following commands should now work for running the visualiser and tester:
-    java -cp bin visualiser/Visualiser [problem-file] [solution-file]
+    java -cp bin visualiser.Visualiser [problem-file] [solution-file]
     java -cp bin tester.Tester [-e maxError] [-v] problem-file [solution-file]
 
 The commands above may require full paths to Java; see section (5).

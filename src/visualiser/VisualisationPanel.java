@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
@@ -154,9 +155,13 @@ public class VisualisationPanel extends JComponent {
 		g2.draw(path);
 		if (animating || !displayingSolution) {
 			p = transform.transform(points.get(0), null);
-			g2.setColor(Color.RED);
-			g2.draw(new Ellipse2D.Double(p.getX() - 5, p.getY() - 5, 10, 10));
-
+			Color color = g2.getColor();
+			Stroke stroke = g2.getStroke();
+			g2.setColor(Color.BLACK);
+			g2.setStroke(new BasicStroke(1));
+			g2.draw(new Ellipse2D.Double(p.getX() - 4, p.getY() - 4, 8, 8));
+			g2.setColor(color);
+			g2.setStroke(stroke);
 		}
 	}
 

@@ -472,7 +472,7 @@ public class Visualiser {
 			samplingSpinner.setVisible(true);
 		} else {
 			infoLabel
-					.setText("Displaying the problem: blue = initial, green = goal, red = obstacle");
+					.setText("Displaying the problem: blue = initial, green = goal, red = obstacle. ASV-1 is circled.");
 			samplingSpinner.setVisible(false);
 		}
 	}

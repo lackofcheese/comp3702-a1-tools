@@ -152,7 +152,7 @@ public class VisualisationPanel extends JComponent {
 		}
 		path.transform(transform);
 		g2.draw(path);
-		if (!animating && !displayingSolution) {
+		if (animating || !displayingSolution) {
 			p = transform.transform(points.get(0), null);
 			g2.setColor(Color.RED);
 			g2.draw(new Ellipse2D.Double(p.getX() - 5, p.getY() - 5, 10, 10));

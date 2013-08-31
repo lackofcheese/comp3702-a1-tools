@@ -123,7 +123,7 @@ public class ProblemSpec {
 			line = input.readLine();
 			lineNo++;
 			s = new Scanner(line);
-			int pathLength = s.nextInt();
+			int pathLength = s.nextInt() + 1;
 			solutionCost = s.nextDouble();
 			s.close();
 
@@ -164,7 +164,7 @@ public class ProblemSpec {
 		}
 		String ls = System.getProperty("line.separator");
 		FileWriter output = new FileWriter(filename);
-		output.write(path.size() + " " + solutionCost + ls);
+		output.write(String.format("%d %f%s", path.size() - 1, solutionCost, ls));
 		for (ASVConfig cfg : path) {
 			output.write(cfg + ls);
 		}

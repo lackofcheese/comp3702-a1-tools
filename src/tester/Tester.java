@@ -640,6 +640,7 @@ public class Tester {
 			tester.ps.loadProblem(problemPath);
 		} catch (IOException e1) {
 			System.out.println("FAILED: Invalid problem file");
+			System.out.println(e1.getMessage());
 			return;
 		}
 
@@ -648,8 +649,10 @@ public class Tester {
 				tester.ps.loadSolution(solutionPath);
 			} catch (IOException e1) {
 				System.out.println("FAILED: Invalid solution file");
+				System.out.println(e1.getMessage());
 				return;
 			}
+
 		} else {
 			tester.ps.assumeDirectSolution();
 		}

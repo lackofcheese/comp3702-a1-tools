@@ -632,7 +632,7 @@ public class Tester {
 		if (problemPath == null) {
 			System.out.println("Usage: tester [-e maxError] [-v] "
 					+ "problem-file [solution-file]");
-			return;
+			System.exit(-1);
 		}
 		System.out.println("Test #0: Loading files");
 		Tester tester = new Tester(maxError);
@@ -641,7 +641,7 @@ public class Tester {
 		} catch (IOException e1) {
 			System.out.println("FAILED: Invalid problem file");
 			System.out.println(e1.getMessage());
-			return;
+			System.exit(-2);
 		}
 
 		if (solutionPath != null) {
@@ -650,7 +650,7 @@ public class Tester {
 			} catch (IOException e1) {
 				System.out.println("FAILED: Invalid solution file");
 				System.out.println(e1.getMessage());
-				return;
+				System.exit(-3);
 			}
 
 		} else {
@@ -666,9 +666,13 @@ public class Tester {
 		testsToRun.addAll(Arrays.asList(new String[] { "booms", "convexity",
 				"areas", "bounds", "collisions" }));
 		int testNo = 1;
+		int numFailures = 0;
 		for (String name : testsToRun) {
-			tester.testByName(name, testNo, verbose);
+			if (!tester.testByName(name, testNo, verbose)) {
+				numFailures++;
+			}
 			testNo++;
 		}
+		System.exit(numFailures);
 	}
 }

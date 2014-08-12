@@ -594,6 +594,7 @@ public class Visualiser {
 			}
 		}
 		frame.setSize(700, 766);
+		frame.setLocation(300, 100);
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);

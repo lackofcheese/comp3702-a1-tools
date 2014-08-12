@@ -18,7 +18,7 @@ public class Tester {
 	/** The minimum allowable boom length */
 	public static final double MIN_BOOM_LENGTH = 0.05;
 	/** The maximum allowable boom length */
-	public static final double MAX_BOOM_LENGTH = 0.075;
+	public static final double MAX_BOOM_LENGTH = 0.05;
 	/** The workspace bounds */
 	public static final Rectangle2D BOUNDS = new Rectangle2D.Double(0, 0, 1, 1);
 	/** The default value for maximum error */
@@ -26,7 +26,7 @@ public class Tester {
 
 	/**
 	 * Returns the minimum area required for the given number of ASVs.
-	 * 
+	 *
 	 * @param asvCount
 	 *            the number of ASVs
 	 * @return the minimum area required.
@@ -39,7 +39,7 @@ public class Tester {
 	/**
 	 * Creates a new Rectangle2D that is grown by delta in each direction
 	 * compared to the given Rectangle2D.
-	 * 
+	 *
 	 * @param rect
 	 *            the Rectangle2D to expand.
 	 * @param delta
@@ -67,7 +67,7 @@ public class Tester {
 
 	/**
 	 * Constructor. Creates a Tester with the given maximum error.
-	 * 
+	 *
 	 * @param maxError
 	 *            the maximum allowable error.
 	 */
@@ -94,7 +94,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the first cfg is the initial cfg.
-	 * 
+	 *
 	 * @return whether the first cfg is the initial cfg.
 	 */
 	public boolean hasInitialFirst() {
@@ -118,7 +118,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the last cfg is the goal cfg.
-	 * 
+	 *
 	 * @return whether the last cfg is the goal cfg.
 	 */
 	public boolean hasGoalLast() {
@@ -128,7 +128,7 @@ public class Tester {
 
 	/**
 	 * Returns a copy of list where each value is incremented by delta.
-	 * 
+	 *
 	 * @param list
 	 *            the list of integers to add to.
 	 * @return a copy of list where each value is incremented by delta.
@@ -165,7 +165,7 @@ public class Tester {
 
 	/**
 	 * Returns the preceding path indices of any invalid steps.
-	 * 
+	 *
 	 * @return the preceding path indices of any invalid steps.
 	 */
 	public List<Integer> getInvalidSteps() {
@@ -184,7 +184,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the step from s0 to s1 is a valid primitive step.
-	 * 
+	 *
 	 * @param cfg0
 	 *            A configuration.
 	 * @param cfg1
@@ -221,7 +221,7 @@ public class Tester {
 
 	/**
 	 * Returns the path indices of any states with invalid booms.
-	 * 
+	 *
 	 * @return the path indices of any states with invalid booms.
 	 */
 	public List<Integer> getInvalidBoomStates() {
@@ -237,7 +237,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the booms in the given configuration have valid lengths.
-	 * 
+	 *
 	 * @param cfg
 	 *            the configuration to test.
 	 * @return whether the booms in the given configuration have valid lengths.
@@ -281,7 +281,7 @@ public class Tester {
 
 	/**
 	 * Returns the path indices of any non-convex states.
-	 * 
+	 *
 	 * @return the path indices of any non-convex states.
 	 */
 	public List<Integer> getNonConvexStates() {
@@ -297,7 +297,7 @@ public class Tester {
 
 	/**
 	 * Normalises an angle to the range (-pi, pi]
-	 * 
+	 *
 	 * @param angle
 	 *            the angle to normalise.
 	 * @return the normalised angle.
@@ -314,7 +314,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the given configuration is convex.
-	 * 
+	 *
 	 * @param cfg
 	 *            the configuration to test.
 	 * @return whether the given configuration is convex.
@@ -389,7 +389,7 @@ public class Tester {
 
 	/**
 	 * Returns the path indices of any states with insufficient area.
-	 * 
+	 *
 	 * @return the path indices of any states with insufficient area.
 	 */
 	public List<Integer> getInvalidAreaStates() {
@@ -405,7 +405,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the given configuration has sufficient area.
-	 * 
+	 *
 	 * @param cfg
 	 *            the configuration to test.
 	 * @return whether the given configuration has sufficient area.
@@ -446,7 +446,7 @@ public class Tester {
 
 	/**
 	 * Returns the path indices of any states that are out of bounds.
-	 * 
+	 *
 	 * @return the path indices of any states that are out of bounds.
 	 */
 	public List<Integer> getOutOfBoundsStates() {
@@ -462,7 +462,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the given configuration fits wholly within the bounds.
-	 * 
+	 *
 	 * @param cfg
 	 *            the configuration to test.
 	 * @return whether the given configuration fits wholly within the bounds.
@@ -500,7 +500,7 @@ public class Tester {
 
 	/**
 	 * Returns the path indices of any states that collide with obstacles.
-	 * 
+	 *
 	 * @return the path indices of any states that collide with obstacles.
 	 */
 	public List<Integer> getCollidingStates() {
@@ -517,7 +517,7 @@ public class Tester {
 	/**
 	 * Returns whether the given config collides with any of the given
 	 * obstacles.
-	 * 
+	 *
 	 * @param cfg
 	 *            the configuration to test.
 	 * @param obstacles
@@ -536,7 +536,7 @@ public class Tester {
 
 	/**
 	 * Returns whether the given config collides with the given obstacle.
-	 * 
+	 *
 	 * @param cfg
 	 *            the configuration to test.
 	 * @param o
@@ -603,7 +603,7 @@ public class Tester {
 
 	/**
 	 * Runs all 9 test cases from the command line.
-	 * 
+	 *
 	 * @param args
 	 *            the command line arguments.
 	 */

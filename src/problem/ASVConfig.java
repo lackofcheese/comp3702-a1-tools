@@ -9,7 +9,7 @@ import java.awt.geom.Point2D;
 /**
  * Represents a configuration of the ASVs. This class doesn't do any validity
  * checking - see the code in tester.Tester for this.
- * 
+ *
  * @author lackofcheese
  */
 public class ASVConfig {
@@ -19,7 +19,7 @@ public class ASVConfig {
 	/**
 	 * Constructor. Takes an array of 2n x and y coordinates, where n is the
 	 * number of ASVs
-	 * 
+	 *
 	 * @param coords
 	 *            the x- and y-coordinates of the ASVs.
 	 */
@@ -33,7 +33,7 @@ public class ASVConfig {
 	/**
 	 * Constructs an ASVConfig from a space-separated string of x- and y-
 	 * coordinates
-	 * 
+	 *
 	 * @param asvCount
 	 *            the number of ASVs to read.
 	 * @param str
@@ -50,7 +50,7 @@ public class ASVConfig {
 
 	/**
 	 * Copy constructor.
-	 * 
+	 *
 	 * @param cfg
 	 *            the configuration to copy.
 	 */
@@ -60,7 +60,7 @@ public class ASVConfig {
 
 	/**
 	 * Returns a space-separated string of the ASV coordinates.
-	 * 
+	 *
 	 * @return a space-separated string of the ASV coordinates.
 	 */
 	public String toString() {
@@ -79,7 +79,7 @@ public class ASVConfig {
 	/**
 	 * Returns the maximum straight-line distance between the ASVs in this state
 	 * vs. the other state, or -1 if the ASV counts don't match.
-	 * 
+	 *
 	 * @param otherState
 	 *            the other state to compare.
 	 * @return the maximum straight-line distance for any ASV.
@@ -102,7 +102,7 @@ public class ASVConfig {
 	/**
 	 * Returns the total straight-line distance over all the ASVs between this
 	 * state and the other state, or -1 if the ASV counts don't match.
-	 * 
+	 *
 	 * @param otherState
 	 *            the other state to compare.
 	 * @return the total straight-line distance over all ASVs.
@@ -121,7 +121,7 @@ public class ASVConfig {
 
 	/**
 	 * Returns the position of the ASV with the given number.
-	 * 
+	 *
 	 * @param asvNo
 	 *            the number of the ASV.
 	 * @return the position of the ASV with the given number.
@@ -132,7 +132,7 @@ public class ASVConfig {
 
 	/**
 	 * Returns the number of ASVs in this configuration.
-	 * 
+	 *
 	 * @return the number of ASVs in this configuration.
 	 */
 	public int getASVCount() {
@@ -141,7 +141,7 @@ public class ASVConfig {
 
 	/**
 	 * Returns the positions of all the ASVs, in order.
-	 * 
+	 *
 	 * @return the positions of all the ASVs, in order.
 	 */
 	public List<Point2D> getASVPositions() {
